@@ -37,6 +37,18 @@ class ConstantSpeedReward(AbstractRewardType):
 
     def __init__(self,max_cte, target_speed, sigma, action_cost):
         self.speed = target_speed
+        self.max_cte = max_cte
+        self.sigma = sigma
+        self.action_cost = action_cost
+
     def __call__(self, state, action, info):
         return self.speed
+    
+    # A function preprocessing state, action and info
+    def preprocess(self, state, action, info):
+        pass
+
+    # A function calculating the reward
+    def calculate_reward(self, state, action, info):
+        pass
     
