@@ -82,12 +82,12 @@ class ConstantSpeedReward(RewardType):
         speed = info["speed"]
         gyro = info["gyro"]
 
-        return (pos, cte, speed, gyro)
+        return (cte, speed)
 
     # A function calculating the reward
     def _reward(self, action, info, done) -> float:
 
-        (pos, cte, speed, gyro) = self._preprocess(info)
+        (cte, speed) = self._preprocess(info)
 
         if done:
             return -1.0
