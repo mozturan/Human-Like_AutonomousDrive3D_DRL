@@ -1,5 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
+
 """
 This file contains abstract reward class for different reward functions for the environment.
 Core is the abstract reward class 
@@ -8,16 +9,24 @@ based on the selected reward function.
 """
 
 # Abstract reward class
-class AbstractRewardType(ABC):
+class RewardType(ABC):
     @abstractmethod
     def __call__(self, state, action, info):
         pass
+
+    @abstractmethod
+    def preprocess(self, state, action, info):
+        pass
+
+    @abstractmethod
+    def calculate_reward(self, state, action, info):
+        pass
     
 #! I might want to change its name
-class ConstantSpeedReward(AbstractRewardType):
+class ConstantSpeedReward(RewardType):
 
     """
-    Reward function that is based on keeping 
+    Reward function class that is based on keeping 
     the agent moving at a constant speed.
 
     Reward is based on how close the car is to the center of the lane.
@@ -41,14 +50,23 @@ class ConstantSpeedReward(AbstractRewardType):
         self.sigma = sigma
         self.action_cost = action_cost
 
-    def __call__(self, state, action, info):
-        return self.speed
-    
+    def __call__(self, state, action, info) -> float: 
+        pass
     # A function preprocessing state, action and info
-    def preprocess(self, state, action, info):
+    def _preprocess(self, state, action, info):
+
+        # State might not be necessary
+        # 
         pass
 
     # A function calculating the reward
-    def calculate_reward(self, state, action, info):
+    def _reward(self, state, action, info) -> float:
+
+        done = False
+        cte = 0
+        if done:
+            return -1.0
+        if cte > self.max_cte:
+            return -1.0
         pass
     
