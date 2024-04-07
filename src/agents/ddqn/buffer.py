@@ -1,5 +1,4 @@
 from typing import Tuple
-# PER
 import numpy as np
 import random as rndm
 from abc import ABC, abstractmethod
