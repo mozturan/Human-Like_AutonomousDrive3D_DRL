@@ -2,3 +2,4 @@
 .python-version
 unitylog.txt
 gym-donkeycar
+*.pyc

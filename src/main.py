@@ -22,6 +22,5 @@ while not(done):
         reward = Reward(action, info, done)
         print(reward)
 
-print(reward)
 
 
