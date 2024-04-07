@@ -12,12 +12,30 @@ class AbstractRewardType(ABC):
     @abstractmethod
     def __call__(self, state, action, info):
         pass
-
-class GaussianReward(AbstractRewardType):
-    def __init__(self, mean, std):
-        self.mean = mean
-        self.std = std
-    def __call__(self, state, action, info):
-        return np.random.normal(self.mean, self.std)
     
+#! I might want to change its name
+class ConstantSpeedReward(AbstractRewardType):
 
+    """
+    Reward function that is based on keeping 
+    the agent moving at a constant speed.
+    To get maximum reward at targetted speed
+    the function uses a gaussian distribution.
+
+    Args:
+        speed (float): speed at which the agent should move
+        sigma (float): standard deviation of the gaussian distribution
+        mu (float): mean of the gaussian distribution
+        max_reward (float): maximum reward that can be obtained
+        min_reward (float): minimum reward that can be obtained
+    
+    Returns:
+        float: reward
+
+    """
+
+    def __init__(self, speed):
+        self.speed = speed
+    def __call__(self, state, action, info):
+        return self.speed
+    
