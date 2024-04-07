@@ -1,3 +1,5 @@
+import logging
+import os
 import json
 
 CONFIG_PATH = "src/utils/config.json"
@@ -12,7 +14,17 @@ def load_config(config_path: str) -> dict:
     Returns:
         dict: A dictionary representing the JSON data read from the configuration file.
     """
-    with open(config_path) as config_file:
-        config = json.load(config_file)
-        print(config)
+    if isinstance(config_path, str):
+        if os.path.isfile(config_path):
+            try:
+                with open(config_path) as config_file:
+                    config = json.load(config_file)
+                    logging.info(config)
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                logging.error(f"Error loading configuration: {e}")
+                config = {}
+        else:
+            raise FileNotFoundError("Invalid file path: {}".format(config_path))
+    else:
+        raise ValueError("config_path must be a string.")
     return config

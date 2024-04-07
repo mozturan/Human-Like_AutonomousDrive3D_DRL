@@ -28,11 +28,11 @@ class ConstantSpeedReward(RewardType):
 
     def __init__(self,max_cte, target_speed, sigma, action_cost):
 
-        if not isinstance(max_cte, float) or max_cte <= 0:
+        if not isinstance(max_cte, int) or max_cte <= 0:
             raise ValueError("max_cte must be a positive float")
-        if not isinstance(target_speed, float) or target_speed <= 0:
+        if not isinstance(target_speed, int) or target_speed <= 0:
             raise ValueError("target_speed must be a positive float")
-        if not isinstance(sigma, float) or sigma <= 0:
+        if not isinstance(sigma, int) or sigma <= 0:
             raise ValueError("sigma must be a positive float")
         if not isinstance(action_cost, float) or action_cost <= 0:
             raise ValueError("action_cost must be a positive float")
@@ -41,6 +41,9 @@ class ConstantSpeedReward(RewardType):
         self.max_cte = max_cte
         self.sigma = sigma
         self.action_cost = action_cost
+
+    def __call__(self, action, info, done):
+        return self._reward(action, info, done)
 
     def _preprocess(self, info) -> tuple:
         expected_keys = ["cte", "speed"]
