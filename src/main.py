@@ -21,6 +21,7 @@ while not(done):
         obs, reward, done, info = env.step(action)
         reward = Reward(action, info, done)
         print(reward)
-        
+
+print(reward)
 
 
