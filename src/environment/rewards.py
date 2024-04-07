@@ -27,15 +27,6 @@ class RewardType(ABC):
 class ConstantSpeedReward(RewardType):
 
     def __init__(self,max_cte, target_speed, sigma, action_cost):
-
-        if not isinstance(max_cte, int) or max_cte <= 0:
-            raise ValueError("max_cte must be a positive float")
-        if not isinstance(target_speed, int) or target_speed <= 0:
-            raise ValueError("target_speed must be a positive float")
-        if not isinstance(sigma, int) or sigma <= 0:
-            raise ValueError("sigma must be a positive float")
-        if not isinstance(action_cost, float) or action_cost <= 0:
-            raise ValueError("action_cost must be a positive float")
         
         self.target_speed = target_speed
         self.max_cte = max_cte
