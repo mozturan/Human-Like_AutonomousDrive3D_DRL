@@ -1,8 +1,38 @@
 # PER
 import numpy as np
 import random as rndm
+from abc import ABC, abstractmethod
 
-class ReplayBuffer(object):
+<<<<<<<<<<<<<<  ✨ Codeium Command ⭐ >>>>>>>>>>>>>>>>
+
+class AbstractReplayBuffer(ABC):
+    """
+    Abstract class for replay buffer
+    """
+    @abstractmethod
+    def store_transition(self, state, action, reward, state_, done):
+        """
+        Store a new transition
+        """
+        pass
+
+    @abstractmethod
+    def sample_buffer(self, batch_size, priority_scale=1.0):
+        """
+        Sample a batch of transitions from the buffer
+        """
+        pass
+
+    @abstractmethod
+    def __len__(self):
+        """
+        Return the number of stored transitions
+        """
+        pass
+
+<<<<<<<  380de486-914e-4870-b1a8-b8afa042c5db  >>>>>>>
+
+class ReplayBuffer(AbstractReplayBuffer):
     """
     * init the values
     * for DQN actions are discrete
