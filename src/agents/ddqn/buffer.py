@@ -1,9 +1,8 @@
+from typing import Tuple
 # PER
 import numpy as np
 import random as rndm
 from abc import ABC, abstractmethod
-
-<<<<<<<<<<<<<<  ✨ Codeium Command ⭐ >>>>>>>>>>>>>>>>
 
 class AbstractReplayBuffer(ABC):
     """
@@ -30,25 +29,25 @@ class AbstractReplayBuffer(ABC):
         """
         pass
 
-<<<<<<<  380de486-914e-4870-b1a8-b8afa042c5db  >>>>>>>
-
-class ReplayBuffer(AbstractReplayBuffer):
+class PER(AbstractReplayBuffer):
     """
     * init the values
     * for DQN actions are discrete
     """
-    def __init__(self, max_size, min_size, input_shape, n_actions, discrete=True):
+    
+    def __init__(self, max_size: int, min_size: int, input_shape: Tuple[int, int, int], n_actions: int, discrete: bool = True):
+        super().__init__()
         self.mem_size = max_size
         self.mem_cntr = 0
         self.min_size = min_size
         self.discrete = discrete
         self.index = 0
         
-        self.state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.float16)
-        self.new_state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.float16)
+        self.state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.float32)
+        self.new_state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.float32)
         dtype = np.int8 if self.discrete else np.float16
         self.action_memory = np.zeros((self.mem_size, n_actions), dtype=dtype)
-        self.reward_memory = np.zeros(self.mem_size, dtype = np.float16)
+        self.reward_memory = np.zeros(self.mem_size, dtype=np.float16)
         self.terminal_memory = np.zeros(self.mem_size)
         self.priorities = np.zeros(self.mem_size, dtype=np.float32)
 
@@ -111,3 +110,6 @@ class ReplayBuffer(AbstractReplayBuffer):
             error = abs(e) + offset
             clipped_error = np.minimum(error, 1.0)
             self.priorities[i] = clipped_error
+
+    def __len__(self):
+        return self.mem_cntr
