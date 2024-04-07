@@ -19,23 +19,24 @@ class ConstantSpeedReward(AbstractRewardType):
     """
     Reward function that is based on keeping 
     the agent moving at a constant speed.
-    To get maximum reward at targetted speed
-    the function uses a gaussian distribution.
+
+    Reward is based on how close the car is to the center of the lane.
+    Reward is also based speed maintenance using a gaussian function.
+    Reward = (1-d) * exp(-(Target_speed - Current_speed)^2/(2*sigma^2))
 
     Args:
-        speed (float): speed at which the agent should move
+        max_cte (float): maximum cte at which the agent should stop
+        target_speed (float): speed at which the agent should move
         sigma (float): standard deviation of the gaussian distribution
-        mu (float): mean of the gaussian distribution
-        max_reward (float): maximum reward that can be obtained
-        min_reward (float): minimum reward that can be obtained
+        action_cost (float): cost of taking an action
     
     Returns:
         float: reward
 
     """
 
-    def __init__(self, speed):
-        self.speed = speed
+    def __init__(self,max_cte, target_speed, sigma, action_cost):
+        self.speed = target_speed
     def __call__(self, state, action, info):
         return self.speed
     
