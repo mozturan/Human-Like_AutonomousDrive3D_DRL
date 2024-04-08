@@ -75,10 +75,10 @@ class DDQN:
         self.q_target.set_weights(self.q_eval.get_weights())
 
     def get_action(self, state):
+        
         if np.random.rand() <= self.epsilon:
             action_index = np.random.randint(0, self.n_actions)
             action = self.discrete_action_space[action_index]
-            return np.random.randint(self.action_size)
 
         else:
             observation = np.expand_dims(state, axis=0)
