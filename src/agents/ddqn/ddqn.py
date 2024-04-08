@@ -75,7 +75,7 @@ class DDQN:
         self.q_target.set_weights(self.q_eval.get_weights())
 
     def get_action(self, state):
-        
+
         if np.random.rand() <= self.epsilon:
             action_index = np.random.randint(0, self.n_actions)
             action = self.discrete_action_space[action_index]
@@ -90,27 +90,49 @@ class DDQN:
         return action, action_index
 
     def train(self, terminal=False):
+
+        if self.memory.mem_cntr < self.min_mem_size:
+            return
+        
+        #? What is this?
         if self.epsilon > self.epsilon_end and self.memory.mem_cntr > self.batch_size:
             self.epsilon_decay()
 
-        if self.memory.mem_cntr < self.batch_size:
-            return
-
         batch = self.memory.sample_buffer(self.batch_size)
-        states, actions, rewards, next_states, dones = batch
+        state, action, reward, new_state, done, sample_indices = batch
 
-        targets = self.model.predict(states)
-        if self.double_dqn:
-            target_actions = np.argmax(self.target_model.predict(next_states), axis=1)
-        else:
-            target_actions = np.argmax(self.target_model.predict(next_states), axis=1)
 
-        target_values = self.target_model.predict(next_states)
-        for i in range(self.batch_size):
-            if dones[i]:
-                targets[i][actions[i]] = rewards[i]
-            else:
-                targets[i][actions[i]] = rewards[i] + self.gamma * target_values[i][target_actions[i]]
+        action_values = np.array(self.action_space, dtype=np.int8)
+        action_indices = np.dot(action, action_values)
+
+        #* get the q values of current states by main network
+        q_pred = self.q_eval.predict(state, verbose=0) #targets
+
+        #! for abs error
+        target_old = np.array(q_pred)
+
+        #* get the q values of next states by target network
+        q_next = self.q_target.predict(new_state, verbose=0) 
+
+        #* get the q values of next states by main network
+        q_eval = self.q_eval.predict(new_state, verbose=0) # type: ignore #! target_next
+
+        #* get the actions with highest q values
+        max_actions = np.argmax(q_eval, axis=1)
+
+        #* we will update this dont worry
+        q_target = q_pred
+
+        batch_index = np.arange(self.batch_size, dtype=np.int32)
+
+        #* new_q = reward + DISCOUNT * max_future_q
+        q_target[batch_index, action_indices] = reward + \
+                    self.gamma*q_next[batch_index, max_actions.astype(int)]*done
+
+        #* error
+        error = target_old[batch_index, action_indices]-q_target[batch_index, action_indices]
+        self.memory.set_priorities(sample_indices, error)
+
 
         if self.tensorboard_log is not None:
             loss = self.model.fit(states, targets, verbose=0, callbacks=[self.tensorboard],
