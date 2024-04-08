@@ -133,13 +133,11 @@ class DDQN:
         error = target_old[batch_index, action_indices]-q_target[batch_index, action_indices]
         self.memory.set_priorities(sample_indices, error)
 
+        loss = self.q_eval.fit(state, q_target, verbose = 0, epochs=1,
+                            batch_size=self.batch_size, callbacks=[self.tensorboard]) # type: ignore
 
-        if self.tensorboard_log is not None:
-            loss = self.model.fit(states, targets, verbose=0, callbacks=[self.tensorboard],
-                                  epochs=1, batch_size=self.batch_size, shuffle=False)
-        else:
-            loss = self.model.fit(states, targets, verbose=0, epochs=1, batch_size=self.batch_size, shuffle=False)
-
+        return loss
+    
     def save_model(self, file_name):
         self.model.save_weights(file_name)
 
