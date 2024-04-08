@@ -7,19 +7,21 @@ import tensorflow as tf
 import keras.backend as K
 import numpy as np
 import gc
+import os
 import time
 
 tf.random.set_seed(43)
 
 
 class DDQN:
-    def __init__(self, state_size, steering_container, throttle_container, hidden_size=256, model_name = None,
+    def __init__(self, state_size, steering_container, throttle_container, hidden_size=256, model_name = "DDQN_DEMO",
                  batch_size=64, memory_capacity=10000, min_mem_size=100,
                  gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995,
                  learning_rate=0.001, double_dqn=True, dueling=False):
         
         self.state_size = state_size #* input shape
 
+        self.model_name = f"{model_name}_{int(time.time())}"
         (self.discrete_action_scape, 
          self.action_space, self.n_actions) = self.process_action_space(
                                             steering_container, throttle_container)
@@ -39,15 +41,13 @@ class DDQN:
         self.learning_rate = learning_rate
         self.double_dqn = double_dqn
         self.dueling = dueling
-        self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/ddqn/{model_name}-{int(time.time())}")
+        self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/ddqn/{self.model_name}")
         
         self.optimizer = Adam(lr=self.learning_rate)
 
         self.q_eval = self._build_model()
         self.q_target = self._build_model()
         self.update_target_model()
-
-
 
     def process_action_space(self, steering_container, throttle_container):
 
@@ -138,8 +138,8 @@ class DDQN:
 
         return loss
     
-    def save_model(self, file_name):
-        self.model.save_weights(file_name)
+    def save_model(self):
+        self.model.save_weights(os.path.join("..", "models", self.model_dir))
 
     def load_model(self, file_name):
         self.model.load_weights(file_name)
