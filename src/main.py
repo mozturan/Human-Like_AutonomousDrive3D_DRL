@@ -13,7 +13,6 @@ Reward = ConstantSpeedReward(max_cte=conf["max_cte"],
                              target_speed=10, 
                              sigma=3, action_cost=0.1)
 
-
 obs, reward, done, info = env.reset()
 done= False
 while not(done):
