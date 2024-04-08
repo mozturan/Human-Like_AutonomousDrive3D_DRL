@@ -76,15 +76,18 @@ class DDQN:
 
     def get_action(self, state):
         if np.random.rand() <= self.epsilon:
+            action_index = np.random.randint(0, self.n_actions)
+            action = self.discrete_action_space[action_index]
             return np.random.randint(self.action_size)
 
-        if self.double_dqn:
-            action_values = self.model.predict(state)
-            return np.argmax(action_values[0])
-
         else:
-            q_value = self.model.predict(state)
-            return np.argmax(q_value[0])
+            observation = np.expand_dims(state, axis=0)
+            qs_ = self.q_eval.predict(observation, verbose=0)
+
+            action_index = np.argmax(qs_)
+            action = self.discrete_action_space[action_index]
+
+        return action, action_index
 
     def train(self, terminal=False):
         if self.epsilon > self.epsilon_end and self.memory.mem_cntr > self.batch_size:
