@@ -140,9 +140,7 @@ class DDQN:
             self.update_network_parameters()
             print("Target Updated")
 
-        gc.collect()
-        K.clear_session()
-        
+
         return loss
     
     def save_model(self):
