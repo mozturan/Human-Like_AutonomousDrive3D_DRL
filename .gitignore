@@ -4,3 +4,6 @@ unitylog.txt
 gym-donkeycar
 *.pyc
 *.ipynb
+/logs
+/models
+/data
