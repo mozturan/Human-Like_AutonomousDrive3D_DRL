@@ -9,6 +9,7 @@ from src.environment.observations import Kinematics
 
 START_ACTION = [0.0,0.0]
 conf = load_config(CONFIG_PATH)
+
 env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
@@ -22,12 +23,13 @@ observation = kinematics(START_ACTION, info)
 
 agent = ddqn.DDQN(state_size=observation.shape, steering_container=5, throttle_container=3)
 
-
 for episode in range(100):
         obs, reward, done, info = env.reset()
         observation = kinematics(START_ACTION, info)
 
-        done= False
+        episode_reward = 0
+        episode_len = 0
+
         while not done:
                 # action = env.action_space.sample() #! does this work?
                 action, action_index = agent.get_action(observation)
@@ -35,6 +37,7 @@ for episode in range(100):
                 new_observation = kinematics(action, new_info)
                 reward = Reward(action, new_info, done)
 
+                #! import train here
 
                 agent.remember(observation, action_index, reward, 
                         new_observation, done)
