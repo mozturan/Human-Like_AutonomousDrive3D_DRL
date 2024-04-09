@@ -15,7 +15,7 @@ tf.random.set_seed(43)
 
 class DDQN:
     def __init__(self, state_size, steering_container, throttle_container, hidden_size=256, model_name = "DDQN_DEMO",
-                 batch_size=64, memory_capacity=10000, min_mem_size=100,
+                 batch_size=64, memory_capacity=10000, min_mem_size=100, replace_target = 100
                  gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995,
                  learning_rate=0.001, double_dqn=True, dueling=False):
         
@@ -68,7 +68,7 @@ class DDQN:
     def remember(self, state, action, reward, next_state, done):
         self.memory.store_transition(state, action, reward, next_state, done)
 
-    def epsilon_decay(self):
+    def epsilon_dec(self):
         self.epsilon = max(self.epsilon_end, self.epsilon_decay * self.epsilon)
 
     def update_network_parameters(self):
@@ -96,7 +96,7 @@ class DDQN:
         
         #? What is this?
         if self.epsilon > self.epsilon_end and self.memory.mem_cntr > self.batch_size:
-            self.epsilon_decay()
+            self.epsilon_dec()
 
         batch = self.memory.sample_buffer(self.batch_size)
         state, action, reward, new_state, done, sample_indices = batch
@@ -135,7 +135,14 @@ class DDQN:
 
         loss = self.q_eval.fit(state, q_target, verbose = 0, epochs=1,
                             batch_size=self.batch_size, callbacks=[self.tensorboard]) # type: ignore
+        
+        if self.memory.mem_cntr % self.replace_target == 0:
+            self.update_network_parameters()
+            print("Target Updated")
 
+        gc.collect()
+        K.clear_session()
+        
         return loss
     
     def save_model(self):

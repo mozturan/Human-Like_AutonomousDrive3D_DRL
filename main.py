@@ -8,6 +8,8 @@ from src.agents.ddqn import ddqn
 from src.environment.observations import Kinematics
 
 START_ACTION = [0.0,0.0]
+score_history = []
+
 conf = load_config(CONFIG_PATH)
 
 env = gym.make("donkey-generated-roads-v0", conf=conf)
@@ -37,14 +39,24 @@ for episode in range(100):
                 new_observation = kinematics(action, new_info)
                 reward = Reward(action, new_info, done)
 
-                #! import train here
+                episode_reward += reward
+                episode_len +=1
 
                 agent.remember(observation, action_index, reward, 
                         new_observation, done)
                 
+                agent.train()
                 observation = new_observation
-                print(reward)
 
+        score_history.append(episode_reward)
+        avg_score = np.mean(score_history)
+
+        print(avg_score)
+
+        agent.tensorboard.update_stats(episode_reward=episode_reward,
+                score_avg=avg_score,
+                episode_len=episode_len,
+                epsilon=agent.epsilon)
 
 env.close()
 
