@@ -22,7 +22,7 @@ class DDQN:
         self.state_size = state_size #* input shape
 
         self.model_name = f"{model_name}_{int(time.time())}"
-        (self.discrete_action_scape, 
+        (self.discrete_action_space, 
          self.action_space, self.n_actions) = self.process_action_space(
                                             steering_container, throttle_container)
         
@@ -35,7 +35,7 @@ class DDQN:
                           discrete=True)
         
         self.gamma = gamma
-        self.epsilon_start = epsilon_start
+        self.epsilon = epsilon_start
         self.epsilon_end = epsilon_end
         self.epsilon_decay = epsilon_decay
         self.learning_rate = learning_rate

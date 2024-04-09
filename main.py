@@ -22,13 +22,27 @@ observation = kinematics(START_ACTION, info)
 
 agent = ddqn.DDQN(state_size=observation.shape, steering_container=5, throttle_container=3)
 
-# done= False
-# for i in range(10):
-#         # action = env.action_space.sample() #! does this work?
-#         action = [0.1,0.3]
-#         obs, reward, done, info = env.step(action)
-#         reward = Reward(action, info, done)
-#         print(info)
 
+for episode in range(100):
+        obs, reward, done, info = env.reset()
+        observation = kinematics(START_ACTION, info)
+
+        done= False
+        while not done:
+                # action = env.action_space.sample() #! does this work?
+                action, action_index = agent.get_action(observation)
+                new_obs, reward, done, new_info = env.step(action)
+                new_observation = kinematics(action, new_info)
+                reward = Reward(action, new_info, done)
+
+
+                agent.remember(observation, action_index, reward, 
+                        new_observation, done)
+                
+                observation = new_observation
+                print(reward)
+
+
+env.close()
 
 
