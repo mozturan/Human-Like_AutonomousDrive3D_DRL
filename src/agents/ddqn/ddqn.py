@@ -15,7 +15,7 @@ tf.random.set_seed(43)
 
 class DDQN:
     def __init__(self, state_size, steering_container, throttle_container, hidden_size=256, model_name = "DDQN_DEMO",
-                 batch_size=64, memory_capacity=10000, min_mem_size=100, replace_target = 100
+                 batch_size=64, memory_capacity=10000, min_mem_size=100, replace_target = 100,
                  gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995,
                  learning_rate=0.001, double_dqn=True, dueling=False):
         
@@ -25,7 +25,7 @@ class DDQN:
         (self.discrete_action_space, 
          self.action_space, self.n_actions) = self.process_action_space(
                                             steering_container, throttle_container)
-        
+        self.replace_target = replace_target
         self.mem_size = memory_capacity
         self.min_mem_size = min_mem_size
         self.hidden_size = hidden_size #* for experimenting
