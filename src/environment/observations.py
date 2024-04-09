@@ -13,18 +13,58 @@ class ObservationType(ABC):
         pass
 
 
-
-class KinematicsObservationType(ObservationType):
+class Kinematics(ObservationType):
     """
     Class for creating a kinematic observation
     """
 
-    def __call__(self, state, action, info):
+
+    def __init__(self, info_config):
+        """
+        Constructor
+        info_config: list of str, values from info dict which should be used in the observation
+        
+        INFO:
+            {'pos': (x,y,z), 
+            'cte': float, 
+            'speed': float, 
+            'forward_vel': float, 
+            'hit': 'none', 
+            'gyro': (x,y,z), 
+            'accel': (x,y,z), 
+            'vel': (x,y,z), 
+            'lidar': [], 
+            'car': (x,y,z),
+            'last_lap_time': 0.0, 
+            'lap_count': 0}        
+            }
+        """
+
+        self.info_config = \
+            info_config if info_config else ['pos', 
+                                             'cte', 
+                                             'speed', 
+                                             'gyro', 
+                                             'accel', 
+                                             'vel']
+    
+    def __call__(self, action, info) -> np.ndarray:
         """
         Process the input and creates a new observation
         """
-        return np.array([state.x, state.y, state.yaw, state.speed])
+        
+        values = []
+        for key in self.info_config:
+            value = info[key]
+            if isinstance(value, tuple):
+                values.extend(list(value))
+            else:
+                values.append(value)
 
+        for act in action:
+            values.append(act)
+
+        return np.array(values)
 
 
 class Camera(ObservationType):
