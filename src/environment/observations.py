@@ -19,11 +19,24 @@ class Kinematics(ObservationType):
     """
 
 
-    def __init__(self, info_config):
+    def __init__(self, info_config=None):
         """
         Constructor
         info_config: list of str, values from info dict which should be used in the observation
+        If None, uses the default values: ['pos', 'cte', 'speed', 'gyro', 'accel', 'vel']
+
+        * Default values:
+        INFO:
+            {'pos': (x,y,z), 
+            'cte': float, 
+            'speed': float, 
+            'forward_vel': float, 
+            'hit': 'none', 
+            'gyro': (x,y,z), 
+            'accel': (x,y,z), 
+            'vel': (x,y,z), 
         
+        * Optional values:
         INFO:
             {'pos': (x,y,z), 
             'cte': float, 

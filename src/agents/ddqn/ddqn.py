@@ -1,5 +1,5 @@
 from src.agents.ddqn.buffer import PER
-from utils.board import ModifiedTensorBoard
+from src.utils.board import ModifiedTensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers import Adam
@@ -43,11 +43,11 @@ class DDQN:
         self.dueling = dueling
         self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/ddqn/{self.model_name}")
         
-        self.optimizer = Adam(lr=self.learning_rate)
+        self.optimizer = Adam(learning_rate==self.learning_rate)
 
         self.q_eval = self._build_model()
         self.q_target = self._build_model()
-        self.update_target_model()
+        self.update_network_parameters()
 
     def process_action_space(self, steering_container, throttle_container):
 
@@ -146,7 +146,7 @@ class DDQN:
 
     def _build_model(self):
         model = Sequential()
-        model.add(Dense(self.hidden_size, activation='relu', input_shape=(self.state_size,)))
+        model.add(Dense(self.hidden_size, activation='relu', input_shape=self.state_size))
         model.add(Dense(self.hidden_size, activation='relu'))
         model.add(Dense(self.n_actions))
         model.compile(loss='mse', optimizer=self.optimizer)
