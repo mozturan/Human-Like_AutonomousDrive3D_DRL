@@ -1,4 +1,4 @@
-from agents.ddqn.buffer import PER
+from src.agents.ddqn.buffer import PER
 from utils.board import ModifiedTensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
@@ -139,7 +139,7 @@ class DDQN:
         return loss
     
     def save_model(self):
-        self.model.save_weights(os.path.join("..", "models", self.model_dir))
+        self.model.save_weights(os.path.join("models", self.model_dir))
 
     def load_model(self, file_name):
         self.model.load_weights(file_name)

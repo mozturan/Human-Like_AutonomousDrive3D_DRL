@@ -2,9 +2,9 @@ import os
 import gym
 import gym_donkeycar
 import numpy as np
-from environment.rewards import ConstantSpeedReward
-from utils.config_loader import load_config, CONFIG_PATH
-from agents.ddqn import ddqn
+from src.environment.rewards import ConstantSpeedReward
+from src.utils.config_loader import load_config, CONFIG_PATH
+from src.agents.ddqn import ddqn
 
 conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-roads-v0", conf=conf)
