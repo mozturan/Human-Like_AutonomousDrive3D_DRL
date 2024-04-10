@@ -1,3 +1,3 @@
 TODO:
 
-- Add positive speed as a reward component.
+- [ ] Add positive speed as a reward component.
