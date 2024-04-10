@@ -14,9 +14,9 @@ tf.random.set_seed(43)
 
 
 class DDQN:
-    def __init__(self, state_size, steering_container, throttle_container, hidden_size=256, model_name = "DDQN_DEMO",
-                 batch_size=64, memory_capacity=10000, min_mem_size=100, replace_target = 100,
-                 gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995,
+    def __init__(self, state_size, steering_container, throttle_container, hidden_size=512, model_name = "DDQN_DEMO",
+                 batch_size=256, memory_capacity=10000, min_mem_size=300, replace_target = 100,
+                 gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.999,
                  learning_rate=0.001, double_dqn=True, dueling=False):
         
         self.state_size = state_size #* input shape
@@ -54,8 +54,8 @@ class DDQN:
         # discrete action space is an array for action values
         # action space is an array for action indices
 
-        steering = np.linspace(-1, 1,steering_container)
-        throttle = np.linspace(-1, 1,throttle_container)
+        steering = np.linspace(-0.5, 0.5,steering_container)
+        throttle = np.linspace(-0.1, 0.5,throttle_container)
 
         grid1, grid2 = np.meshgrid(steering, throttle)
         discrete_action_space = np.column_stack((grid1.ravel(), grid2.ravel()))

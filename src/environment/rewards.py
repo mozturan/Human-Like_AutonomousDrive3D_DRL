@@ -37,8 +37,8 @@ class ConstantSpeedReward(RewardType):
         return self._reward(action, info, done)
 
     def _preprocess(self, info) -> tuple:
-        expected_keys = ["cte", "speed"]
-        expected_types = [float, float]
+        expected_keys = ["cte", "speed", "forward_vel"]
+        expected_types = [float, float, float]
 
         for key, value in zip(expected_keys, expected_types):
             if key not in info or not isinstance(info[key], value):
@@ -46,15 +46,18 @@ class ConstantSpeedReward(RewardType):
 
         cte = info["cte"]
         speed = info["speed"]
+        forward_vel = info["forward_vel"]
 
-        return (cte, speed)
+        return (cte, speed, forward_vel)
 
     def _reward(self, action, info, done) -> float:
-        (cte, speed) = self._preprocess(info)
+        (cte, speed, forward_vel) = self._preprocess(info)
 
         if done:
             return -1.0
         if cte > self.max_cte:
+            return -1.0
+        if forward_vel < 0.0:
             return -1.0
   
         reward_cte = self._calculate_cte_reward(cte)
