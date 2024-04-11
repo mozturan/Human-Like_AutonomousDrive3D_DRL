@@ -6,7 +6,7 @@ from src.environment.rewards import ConstantSpeedReward
 from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
 from src.environment.observations import Kinematics
-from src.agents.ddqn import ddqn
+from src.agents import ddqn
 
 START_ACTION = [0.0,0.0]
 score_history = []

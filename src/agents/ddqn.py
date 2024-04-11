@@ -1,4 +1,4 @@
-from src.agents.ddqn.buffer import PER
+from src.agents.buffer import PER
 from src.utils.board import ModifiedTensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
@@ -18,7 +18,32 @@ class DDQN:
                  batch_size=256, memory_capacity=10000, min_mem_size=300, replace_target = 100,
                  gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.999,
                  learning_rate=0.001, double_dqn=True, dueling=False):
-        
+
+        """
+        Initialize the Deep Q-Learning Network (DQN) agent with the specified parameters.
+
+        Parameters:
+            state_size (int): The size of the state space.
+            steering_container (obj): The container for steering actions.
+            throttle_container (obj): The container for throttle actions.
+            hidden_size (int): The size of the hidden layers in the neural network. Default is 512.
+            model_name (str): The name of the model. Default is "DDQN_DEMO".
+            batch_size (int): The batch size for training. Default is 256.
+            memory_capacity (int): The maximum capacity of the replay memory. Default is 10000.
+            min_mem_size (int): The minimum size of the replay memory before training starts. Default is 300.
+            replace_target (int): The frequency of updating the target network. Default is 100.
+            gamma (float): The discount factor for future rewards. Default is 0.99.
+            epsilon_start (float): The starting value of epsilon for epsilon-greedy policy. Default is 1.0.
+            epsilon_end (float): The minimum value of epsilon. Default is 0.01.
+            epsilon_decay (float): The decay rate of epsilon. Default is 0.999.
+            learning_rate (float): The learning rate for the optimizer. Default is 0.001.
+            double_dqn (bool): Whether to use Double DQN. Default is True.
+            dueling (bool): Whether to use Dueling DQN. Default is False.
+
+        Returns:
+            None
+        """
+
         self.state_size = state_size #* input shape
 
         self.model_name = f"{model_name}_{int(time.time())}"
