@@ -17,8 +17,8 @@ tf.random.set_seed(43)
 
 
 class SAC:
-    def __init__(self, state_size, action_size, actor_lr=0.0003, critic_lr=0.001, 
-                 discount=0.99, tau=0.005, buffer_size=int(1e6), batch_size=256):
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=512, temperature=0.03,
+                 gamma=0.99, tau=0.005, buffer_size=int(1e6), batch_size=256, reward_scale=1.0):
         """
         Params
         ======
@@ -38,21 +38,26 @@ class SAC:
         # Actor Network (w/ Target Network)
         self.actor_local = self._actor_network()
         self.actor_target = self._actor_network()
-        self.actor_optimizer = Adam(lr=actor_lr)
+        self.actor_optimizer = Adam(lr=alpha)
         
         # Critic Network (w/ Target Network)
         self.critic_local = self._critic_network()
         self.critic_target = self._critic_network()
-        self.critic_optimizer = Adam(lr=critic_lr)
+        self.critic_optimizer = Adam(lr=beta)
         
+        self.hidden_size = hidden_size
+        self.reward_scale = reward_scale
+        self.tempereture = temperature
+
         # Noise process
         self.noise = self.OUNoise(action_size)
         
         # Replay memory
-        self.memory = ReplayBuffer(buffer_size, batch_size)
+        self.memory = ReplayBuffer(buffer_size, self.state_size,
+                                   self.action_size, batch_size)
         
         # Save the hyperparameters
-        self.discount = discount
+        self.gamma = gamma
         self.tau = tau
         
         # Set up the optimizer
@@ -124,7 +129,7 @@ class SAC:
             # Compute the target Q values using the target critic network
             Q_targets_next = self.critic_target([next_states, next_actions])
             # Compute the expected Q values
-            Q_targets = rewards + (self.discount * Q_targets_next * (1 - dones))
+            Q_targets = rewards + (self.gamma * Q_targets_next * (1 - dones))
             # Compute the critic loss
             Q_expected = self.critic_local([states, actions])
             critic_loss = self.critic_criterion(Q_expected, Q_targets)
