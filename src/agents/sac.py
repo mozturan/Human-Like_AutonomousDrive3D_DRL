@@ -296,3 +296,4 @@ class SAC:
         self.update_network_parameters()
         gc.collect()
         K.clear_session()
+        
