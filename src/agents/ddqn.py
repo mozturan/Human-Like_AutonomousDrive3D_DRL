@@ -165,11 +165,13 @@ class DDQN:
             self.update_network_parameters()
             print("Target Updated")
 
-
+        gc.collect()
+        K.clear_session()
+        
         return loss
     
     def save_model(self):
-        self.model.save_weights(os.path.join("models", self.model_dir))
+        self.model.save_weights(os.path.join("models", self.model_name))
 
     def load_model(self, file_name):
         self.model.load_weights(file_name)
