@@ -6,7 +6,7 @@ from src.environment.rewards import ConstantSpeedReward
 from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
 from src.environment.observations import Kinematics
-from src.agents import ddqn
+from src.agents import sac
 
 START_ACTION = [0.0,0.0]
 score_history = []
@@ -24,7 +24,7 @@ kinematics = Kinematics()
 obs, reward, done, info = env.reset()
 observation = kinematics(START_ACTION, info)
 
-agent = ddqn.DDQN(state_size=observation.shape, steering_container = 5, throttle_container=4)
+agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=100)
 
 for episode in range(5000):
         obs, reward, done, info = env.reset()
@@ -35,15 +35,15 @@ for episode in range(5000):
 
         while not done:
                 # action = env.action_space.sample() #! does this work?
-                action, action_index = agent.get_action(observation)
-                new_obs, reward, done, new_info = env.step(action)
+                action = agent.choose_action(observation)
+                new_obs, reward, done, new_info = env.step(np.array(action))
                 new_observation = kinematics(action, new_info)
                 reward = Reward(action, new_info, done)
-
+                print(new_info)
                 episode_reward += reward
                 episode_len +=1
 
-                agent.remember(observation, action_index, reward, 
+                agent.remember(observation, action, reward, 
                         new_observation, done)
                 
                 agent.train()
@@ -54,8 +54,7 @@ for episode in range(5000):
 
         agent.tensorboard.update_stats(episode_reward=episode_reward,
                 score_avg=avg_score,
-                episode_len=episode_len,
-                epsilon=agent.epsilon)
+                episode_len=episode_len)
         
         print("Memory Count: " , agent.memory.mem_cntr)
 

@@ -2,7 +2,7 @@ from src.agents.buffer import ReplayBuffer
 from src.utils.board import ModifiedTensorBoard
 from keras.layers import Dense
 from keras.models import Sequential
-from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
 import tensorflow as tf
 import keras.backend as K
 import numpy as np
@@ -132,26 +132,33 @@ class SAC:
         
         self.model_name = f"{model_name}_{int(time.time())}"
 
+        """
         # Actor Network (w/ Target Network)
         self.actor_local = self._actor_network()
         self.actor_target = self._actor_network()
-        self.actor_optimizer = Adam(lr=alpha)
-        
+        """
+        self.actor_optimizer = Adam(learning_rate=alpha)
+        """
         # Critic Network (w/ Target Network)
         self.critic_local = self._critic_network()
         self.critic_target = self._critic_network()
-        self.critic_optimizer = Adam(lr=beta)
-        
+        """
+        self.critic_optimizer = Adam(learning_rate=beta)
+
+
         self.hidden_size = hidden_size
         self.tempereture = temperature
 
         # Noise process
-        self.noise = self.OUNoise(action_size)
+        # self.noise = self.OUNoise(action_size)
         
         # Replay memory
-        self.memory = ReplayBuffer(buffer_size, self.state_size,
-                                   self.action_size, batch_size)
+        self.memory = ReplayBuffer(max_size=buffer_size, 
+                                   input_shape=self.state_size, 
+                                   n_actions=self.action_size, 
+                                   discrete = False)
         self.min_size = min_size
+        self.batch_size = batch_size
         
         # Save the hyperparameters
         self.gamma = gamma
