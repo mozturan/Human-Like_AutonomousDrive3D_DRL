@@ -1,5 +1,14 @@
 {
     "exe_path": "/home/o/Applications/DonkeySimLinux/donkey_sim.x86_64",
     "port": 9091,
-    "max_cte": 3
+    "max_cte": 3,
+    "cam_config":{"img_w": 160, "img_h": 120, "img_d": 3},
+    "body_style": "donkey",
+    "body_rgb": [128, 128, 128],
+    "car_name": "me",
+    "font_size": 100,
+    "racer_name": "test",
+    "country": "Middle East",
+    "bio": "I am the best racer in the world",
+    "host": "127.0.0.1"
 }

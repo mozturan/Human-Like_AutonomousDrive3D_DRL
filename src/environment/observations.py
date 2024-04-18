@@ -85,14 +85,23 @@ class Camera(ObservationType):
     Class for creating a camera observation
     """
 
-    def __init__(self, stack_size=4):
-        self.stack_size = stack_size
+    def __init__(self):
+        # Implement for later
+        pass
 
-    def __call__(self, state, action, info):
+    def __call__(self, state):
         """
         Process the input and creates a new observation
         """
-        stacked_image = np.stack([state.image] * self.stack_size, axis=2)
-        return stacked_image
+        image = self.rgb2gray(state)
+        image = np.expand_dims(image, axis=-1)
+        return image
+
+    def rgb2gray(self, rgb):
+        """
+        Converts an RGB image to grayscale
+        """
+        return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
 
 

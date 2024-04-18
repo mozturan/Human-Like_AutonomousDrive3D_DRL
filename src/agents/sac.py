@@ -1,6 +1,6 @@
 from src.agents.buffer import ReplayBuffer
 from src.utils.board import ModifiedTensorBoard
-from keras.layers import Dense
+from keras.layers import Dense, Conv2D, Flatten, MaxPool2D
 from keras.models import Sequential
 from keras.optimizers.legacy import Adam
 import tensorflow as tf
@@ -14,10 +14,10 @@ import sys
 import random as rndm
 import keras
 
-tf.random.set_seed(43)
+tf.random.set_seed(27)
 
 class CriticNetwork(keras.Model):
-    def __init__(self, n_actions, fc1_dims=128, fc2_dims=128,
+    def __init__(self, n_actions, fc1_dims=256, fc2_dims=256,
             name='critic', chkpt_dir='tmp/sac'):
         super(CriticNetwork, self).__init__()
         self.fc1_dims = fc1_dims
@@ -31,8 +31,24 @@ class CriticNetwork(keras.Model):
         self.fc2 = Dense(self.fc2_dims, activation='relu')
         self.q = Dense(1, activation=None)
 
+        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
+        self.flatten = Flatten()
+
     def call(self, state, action):
-        action_value = self.fc1(tf.concat([state, action], axis=1))
+
+        state_value = self.conv1(state)
+        state_value = self.conv2(state_value)
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
+        state_value = self.flatten(state_value)
+
+        #Normalizing action
+        # action = (action+1.)/2. #* Normalize between 0 and 1
+
+        action_value = self.fc1(tf.concat([state_value, action], axis=1))
         action_value = self.fc2(action_value)
 
         q = self.q(action_value)
@@ -40,7 +56,7 @@ class CriticNetwork(keras.Model):
         return q
 
 class ValueNetwork(keras.Model):
-    def __init__(self, fc1_dims=128, fc2_dims=128,
+    def __init__(self, fc1_dims=256, fc2_dims=256,
             name='value', chkpt_dir='tmp/sac'):
         super(ValueNetwork, self).__init__()
         self.fc1_dims = fc1_dims
@@ -53,8 +69,22 @@ class ValueNetwork(keras.Model):
         self.fc2 = Dense(fc2_dims, activation='relu')
         self.v = Dense(1, activation=None)
 
+        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
+        self.flatten = Flatten()
+
+
     def call(self, state):
-        state_value = self.fc1(state)
+
+        state_value = self.conv1(state)
+        state_value = self.conv2(state_value)
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
+        state_value = self.flatten(state_value)
+
+        state_value = self.fc1(state_value)
         state_value = self.fc2(state_value)
 
         v = self.v(state_value)
@@ -80,8 +110,22 @@ class ActorNetwork(keras.Model):
         self.mu = Dense(self.n_actions, activation=None)
         self.sigma = Dense(self.n_actions, activation=None)
 
+        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
+        self.flatten = Flatten()
+
+
     def call(self, state):
-        prob = self.fc1(state)
+
+        state_value = self.conv1(state)
+        state_value = self.conv2(state_value)
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
+        state_value = self.flatten(state_value)
+
+        prob = self.fc1(state_value)
         prob = self.fc2(prob)
 
         mu = self.mu(prob)
@@ -112,8 +156,8 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=512, temperature=0.03,
-                 gamma=0.99, tau=0.005, buffer_size=int(1e6), min_size=1000, batch_size=256, reward_scale=1.0, model_name = "SAC_DEMO"):
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.05,
+                 gamma=0.99, tau=0.005, buffer_size=int(100000), min_size=1000, batch_size=64, reward_scale=1.0, model_name = "SAC_DEMO"):
         """
         * Params
         ======
@@ -190,7 +234,7 @@ class SAC:
         """
 
         #* A noise added in sample_normal function
-        state = tf.convert_to_tensor([observation])
+        state = tf.expand_dims(observation, axis=0)
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
         
         return actions[0]

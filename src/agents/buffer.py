@@ -157,8 +157,6 @@ class ReplayBuffer:
             self.action_memory[index] = action
 
 
-
-        self.action_memory[index] = action
         self.reward_memory[index] = reward
         self.terminal_memory[index] = done
 
