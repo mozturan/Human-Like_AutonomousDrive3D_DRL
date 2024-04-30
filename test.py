@@ -10,7 +10,7 @@ from src.agents import sac
 
 START_ACTION = [0.0,0.0]
 score_history = []
-
+ 
 conf = load_config(CONFIG_PATH)
 
 env = gym.make("donkey-generated-roads-v0", conf=conf)

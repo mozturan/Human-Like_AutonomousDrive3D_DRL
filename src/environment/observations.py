@@ -85,8 +85,11 @@ class Camera(ObservationType):
     Class for creating a camera observation
     """
 
-    def __init__(self):
+    def __init__(self, stack_size, image_shape=None):
         # Implement for later
+        stack_size = 4
+        self.image_shape = image_shape
+        self.stack = np.zeros()
         pass
 
     def __call__(self, state):
@@ -104,4 +107,27 @@ class Camera(ObservationType):
         return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
 
+class CameraStack(Camera):
+    """
+    Class for stacking sequential grayscale images
+    """
+
+    def __init__(self, stack_size = 4, image_shape = (120,160)):
+        super().__init__(stack_size, image_shape)
+        self.stack = np.zeros((stack_size, *image_shape, 1))
+
+    def __call__(self, state):
+        """
+        Process the input and creates a new observation
+        """
+        self.stack = np.roll(self.stack, -1, axis=0)
+        self.stack[-1] = self.rgb2gray(state)[:, :, np.newaxis]
+        return self.stack
+
+    def reset(self, state):
+        """
+        Resets the stack with the first image only
+        """
+        self.stack[0] = self.rgb2gray(state)[:, :, np.newaxis]
+        self.stack[1:] = 0.
 
