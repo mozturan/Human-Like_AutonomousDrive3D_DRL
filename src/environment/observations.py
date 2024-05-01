@@ -125,9 +125,7 @@ class CameraStack(Camera):
         Process the input and creates a new observation
         """
         self.stack = np.roll(self.stack, -1, axis=0)
-        print(self.stack.shape)
         self.stack[-1] = self.rgb2gray(state)[:, :, np.newaxis]
-        print(self.stack.shape)
 
     def reset(self, state):
         """
@@ -145,38 +143,38 @@ class CameraStack(Camera):
     
 
     # Returns a stack of grayscale images with shape (stack_size, image_shape[0], image_shape[1], 1) when called with a state
-def test_return_stack_with_state():
-        stack_size = 4
-        image_shape = (120, 160)
-        camera_stack = CameraStack(stack_size, image_shape)
-        state = np.ones((image_shape[0], image_shape[1], 3))
-        camera_stack(state)
-        print(camera_stack.get_observation())
-        print("----------------------------")
+# def test_return_stack_with_state():
+#         stack_size = 4
+#         image_shape = (120, 160)
+#         camera_stack = CameraStack(stack_size, image_shape)
+#         state = np.ones((image_shape[0], image_shape[1], 3))
+#         camera_stack(state)
+#         print(camera_stack.get_observation())
+#         print("----------------------------")
 
-        camera_stack(state)
-        print(camera_stack.get_observation())
-        print("----------------------------")
+#         camera_stack(state)
+#         print(camera_stack.get_observation())
+#         print("----------------------------")
 
-        camera_stack(state)
-        print(camera_stack.get_observation())
-        print("----------------------------")
+#         camera_stack(state)
+#         print(camera_stack.get_observation())
+#         print("----------------------------")
 
-        camera_stack(state)
-        print(camera_stack.get_observation())
-        print("----------------------------")
+#         camera_stack(state)
+#         print(camera_stack.get_observation())
+#         print("----------------------------")
 
-        state = np.zeros((image_shape[0], image_shape[1], 3))
-        camera_stack.reset(state)
-        print(camera_stack.get_observation())
-        print("----------------------------")
+#         state = np.zeros((image_shape[0], image_shape[1], 3))
+#         camera_stack.reset(state)
+#         print(camera_stack.get_observation())
+#         print("----------------------------")
 
-        state = np.ones((image_shape[0], image_shape[1], 3))
-        camera_stack(state)
-        print(camera_stack.get_observation())
+#         state = np.ones((image_shape[0], image_shape[1], 3))
+#         camera_stack(state)
+#         print(camera_stack.get_observation())
 
-        print(camera_stack.get_observation().shape)
-        # assert result.shape == (stack_size, image_shape[0], image_shape[1], 1)
+#         print(camera_stack.get_observation().shape)
+#         # assert result.shape == (stack_size, image_shape[0], image_shape[1], 1)
 
 
-test_return_stack_with_state()
+# test_return_stack_with_state()
