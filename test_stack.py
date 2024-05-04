@@ -9,6 +9,9 @@ from src.environment.observations import CameraStack
 from src.agents import sac
 import time
 
+#TODO: BETTER REWARD FUNCTION
+#TODO: BETTER STATE HANDLING BY PRE TRAININ THE CNN'S
+
 START_ACTION = [0.0,0.0]
 score_history = []
  
