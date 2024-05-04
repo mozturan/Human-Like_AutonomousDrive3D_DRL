@@ -7,13 +7,16 @@ from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
 from src.environment.observations import CameraStack
 from src.agents import sac
+import time
 
 START_ACTION = [0.0,0.0]
 score_history = []
  
 conf = load_config(CONFIG_PATH)
 
-env = gym.make("donkey-generated-roads-v0", conf=conf)
+env = gym.make("donkey-generated-roads-v0", conf=conf, render_mode = "human")
+
+time.sleep(5)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
                              target_speed=3, 
