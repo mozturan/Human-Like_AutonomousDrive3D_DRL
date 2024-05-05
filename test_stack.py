@@ -17,13 +17,13 @@ score_history = []
  
 conf = load_config(CONFIG_PATH)
 
-env = gym.make("donkey-generated-roads-v0", conf=conf, render_mode = "human")
+env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 time.sleep(5)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
-                             target_speed=3, 
-                             sigma=3, action_cost=0.0)
+                             target_speed=1, 
+                             sigma=0.2, action_cost=0.0)
 
 camera = CameraStack(stack_size=2, image_shape=(120, 160))
 
@@ -32,8 +32,8 @@ observation = camera.reset(obs)
 observation = camera.get_observation()
 
 agent = sac.SAC(state_size=observation.shape, action_size=2, 
-                hidden_size=256,min_size=300, buffer_size=10000, 
-                batch_size=256)
+                hidden_size=512,min_size=20, buffer_size=100000, 
+                batch_size=16)
 
 for episode in range(5000):
         obs, reward, done, info = env.reset()
@@ -46,10 +46,10 @@ for episode in range(5000):
         while not done:
                 # action = env.action_space.sample() #! does this work?
                 action = agent.choose_action(observation)
+                action = [action[0]/2.0, action[1]/2.0]
                 new_obs, reward, done, new_info = env.step(np.array(action))
                 new_observation = camera(new_obs)
                 new_observation = camera.get_observation()
-
                 reward = Reward(action, new_info, done)
 
                 episode_reward += reward

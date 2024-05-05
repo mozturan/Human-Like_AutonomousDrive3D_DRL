@@ -14,7 +14,7 @@ import sys
 import random as rndm
 import keras
 
-tf.random.set_seed(27)
+tf.random.set_seed(48)
 
 class CriticNetwork(keras.Model):
     def __init__(self, n_actions, fc1_dims=256, fc2_dims=256,
@@ -31,9 +31,9 @@ class CriticNetwork(keras.Model):
         self.fc2 = Dense(self.fc2_dims, activation='relu')
         self.q = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
         self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
         self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
 
@@ -69,9 +69,9 @@ class ValueNetwork(keras.Model):
         self.fc2 = Dense(fc2_dims, activation='relu')
         self.v = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
         self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
         self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
 
@@ -110,9 +110,9 @@ class ActorNetwork(keras.Model):
         self.mu = Dense(self.n_actions, activation=None)
         self.sigma = Dense(self.n_actions, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
         self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
         self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
 
@@ -156,7 +156,7 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.05,
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.01,
                  gamma=0.99, tau=0.005, buffer_size=int(100000), min_size=1000, batch_size=64, reward_scale=1.0, model_name = "SAC_DEMO"):
         """
         * Params
