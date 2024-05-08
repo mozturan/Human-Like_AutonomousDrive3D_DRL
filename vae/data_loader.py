@@ -8,8 +8,20 @@ import cv2
 import numpy as np
 from joblib import Parallel, delayed
 
-from config import IMAGE_WIDTH, IMAGE_HEIGHT, ROI
+# Raw camera input
+CAMERA_HEIGHT = 120
+CAMERA_WIDTH = 160
+CAMERA_RESOLUTION = (CAMERA_WIDTH, CAMERA_HEIGHT)
+MARGIN_TOP = CAMERA_HEIGHT // 3
+# Region Of Interest
+# r = [margin_left, margin_top, width, height]
+ROI = [0, MARGIN_TOP, CAMERA_WIDTH, CAMERA_HEIGHT - MARGIN_TOP]
 
+# Input dimension for VAE
+IMAGE_WIDTH = ROI[2]
+IMAGE_HEIGHT = ROI[3]
+N_CHANNELS = 3
+INPUT_DIM = (IMAGE_HEIGHT, IMAGE_WIDTH, N_CHANNELS)
 
 def preprocess_input(x, mode="rl"):
     """

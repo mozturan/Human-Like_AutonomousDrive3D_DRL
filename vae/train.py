@@ -9,11 +9,15 @@ import numpy as np
 from stable_baselines.common import set_global_seeds
 from tqdm import tqdm
 
-from config import ROI
+CAMERA_HEIGHT = 120
+CAMERA_WIDTH = 160
+CAMERA_RESOLUTION = (CAMERA_WIDTH, CAMERA_HEIGHT)
+MARGIN_TOP = CAMERA_HEIGHT // 3
+ROI = [0, MARGIN_TOP, CAMERA_WIDTH, CAMERA_HEIGHT - MARGIN_TOP]
 from vae.controller import VAEController
 from .data_loader import DataLoader
 from .model import ConvVAE
-
+ 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--folder', help='Path to a folder containing images for training', type=str,
                     default='logs/recorded_data/')
