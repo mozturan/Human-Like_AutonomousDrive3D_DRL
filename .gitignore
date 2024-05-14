@@ -7,3 +7,5 @@ gym-donkeycar
 /logs
 /models
 /data
+/images
+*.jpg

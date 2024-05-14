@@ -119,7 +119,6 @@ class CameraStack(Camera):
                             stack_size)
         print(self.stack.shape)
 
-
     def __call__(self, state):
         """
         Process the input and creates a new observation
