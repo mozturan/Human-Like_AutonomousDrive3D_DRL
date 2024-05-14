@@ -10,6 +10,7 @@ import keras
 import matplotlib.pyplot as plt
 from PIL import Image
 import cv2
+from keras.optimizers.legacy import Adam
 
 def load_data(data_dir):
     def load_images_from_path(path):
@@ -32,12 +33,6 @@ def load_data(data_dir):
 
     return dataset
 
-def rgb2gray(rgb):
-        """
-        Converts an RGB image to grayscale
-        """
-        return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
-
 def prepare_data(images):
     X = images.copy()
     y = to_categorical(np.arange(images.shape[0]))
@@ -52,31 +47,44 @@ def merge_datasets(ds1, ds2):
     """
     return np.vstack((ds1, ds2))
 
+class ConvolutionalAutoencoder:
+    def __init__(self, input_shape=(120, 160, 3), num_filters=[32, 64, 128]):
+        self.input_shape = input_shape
+        self.num_filters = num_filters
+        self.autoencoder = self.build_autoencoder()
 
-class Autoencoder():
-    def __init__(self):
+    def build_autoencoder(self):
+        input_img = keras.Input(shape=self.input_shape)
+        x = input_img
+        # Encoder
+        for filters in self.num_filters:
+            x = Conv2D(filters, (5,5), activation='relu', padding='same')(x)
+            x = MaxPooling2D((2, 2), padding='same')(x)
+        encoded = x
 
-        self.encoder = Sequential([
+        # Decoder
+        for filters in reversed(self.num_filters[:-1]):
+            x = Conv2DTranspose(filters, (5,5), activation='relu', padding='same')(x)
+            x = UpSampling2D((2, 2))(x)
+        decoded = Conv2DTranspose(3, (5,5), activation='sigmoid', padding='same')(x)
 
-            # keras.Input(shape=(120,160, 3)),
-
-            Conv2D(32, (4, 4), strides=2, activation='relu', padding='same', name="enc_conv1"),
-            Conv2D(64, (4,4), strides=2, activation='relu', padding='same', name="enc_conv2"),
-            Conv2D(128, (4, 4), strides=2, activation='relu', padding='same', name="enc_conv3"),
-            # Conv2D(256, (4, 4), strides=2, activation='relu', padding='same', name="enc_conv4")
-        ])
-
-
-        self.decoder = Sequential([
-            Conv2DTranspose(128, (4, 4), strides=2, activation='relu', padding='same', name="dec_conv3"),
-            Conv2DTranspose(64, (4,4), strides=2, activation='relu', padding='same', name="dec_conv2"),
-            Conv2DTranspose(32, (4, 4), strides=2, activation='relu', padding='same', name="dec_conv1")
-            # Conv2D(1, (4, 4), activation='sigmoid', padding='same', name="dec_conv4")
-            # keras.layer    
-            ])
-
-    def build(self):
-        return keras.models.Sequential([self.encoder, self.decoder])
+        autoencoder = keras.Model(input_img, decoded)
+        autoencoder.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
+        return autoencoder
+    
+    def train(self, X_train, X_test, epochs=50, batch_size=128):
+        self.autoencoder.fit(X_train, X_train,
+                             epochs=epochs,
+                             batch_size=batch_size,
+                             shuffle=True,
+                             validation_data=(X_test, X_test))
+        
+    def save(self, encoder_file="encoder_model.json", weights_file="encoder_weights.h5"):
+        encoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.get_layer(index=-5).output)
+        encoder_json = encoder.to_json()
+        with open(encoder_file, "w") as json_file:
+            json_file.write(encoder_json)
+        encoder.save_weights(weights_file)
 
 if __name__ == '__main__':
     #* we have 2 folders with images
@@ -87,19 +95,7 @@ if __name__ == '__main__':
     images = merge_datasets(images1, images2)
 
     X_train, X_test, y_train, y_test = prepare_data(images)
-    # x_train = np.array(X_train)
-    # x_test = np.array(X_test)
-
-    # autoencoder = Autoencoder()
-    # autoencoder = autoencoder.build()
-
     # autoencoder.compile(optimizer='adam', loss=keras.losses.MeanSquaredError())
-
-    # autoencoder.fit(X_train, X_train,
-    #                 epochs=10,
-    #                 batch_size=32,
-    #                 shuffle=True,
-    #                 validation_data=(X_test, X_test))
 
     input_img = keras.Input(shape=(120, 160, 3))
     x = Conv2D(32, (4,4), activation='relu', padding='same')(input_img)
