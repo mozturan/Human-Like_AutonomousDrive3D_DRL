@@ -58,19 +58,19 @@ class ConvolutionalAutoencoder:
         x = input_img
         # Encoder
         for filters in self.num_filters:
-            x = Conv2D(filters, (5,5), activation='relu', padding='same')(x)
+            x = Conv2D(filters, (3, 3), activation='relu', padding='same')(x)
             x = MaxPooling2D((2, 2), padding='same')(x)
         encoded = x
 
         # Decoder
-        for filters in reversed(self.num_filters[:-1]):
-            x = Conv2DTranspose(filters, (5,5), activation='relu', padding='same')(x)
+        for filters in reversed(self.num_filters):
+            x = Conv2D(filters, (3, 3), activation='relu', padding='same')(x)
             x = UpSampling2D((2, 2))(x)
-        decoded = Conv2DTranspose(3, (5,5), activation='sigmoid', padding='same')(x)
+        decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
         autoencoder = keras.Model(input_img, decoded)
-        autoencoder.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
-        return autoencoder
+        autoencoder.compile(optimizer='adam', loss='mse')
+        return autoencoder    
     
     def train(self, X_train, X_test, epochs=50, batch_size=128):
         self.autoencoder.fit(X_train, X_train,
@@ -78,7 +78,13 @@ class ConvolutionalAutoencoder:
                              batch_size=batch_size,
                              shuffle=True,
                              validation_data=(X_test, X_test))
-        
+
+    def predict(self, X):
+        """
+        Predicts reconstruction for given images
+        """
+        return self.autoencoder.predict(X)
+
     def save(self, encoder_file="encoder_model.json", weights_file="encoder_weights.h5"):
         encoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.get_layer(index=-5).output)
         encoder_json = encoder.to_json()
@@ -95,36 +101,39 @@ if __name__ == '__main__':
     images = merge_datasets(images1, images2)
 
     X_train, X_test, y_train, y_test = prepare_data(images)
+
+    autoencoder = ConvolutionalAutoencoder()
+    autoencoder.train(X_train, X_test, epochs=20, batch_size=128)
     # autoencoder.compile(optimizer='adam', loss=keras.losses.MeanSquaredError())
 
-    input_img = keras.Input(shape=(120, 160, 3))
-    x = Conv2D(32, (4,4), activation='relu', padding='same')(input_img)
-    x = MaxPooling2D((2, 2), padding='same')(x)
-    x = Conv2D(64, (4,4), activation='relu', padding='same')(x)
-    x = MaxPooling2D((2, 2), padding='same')(x)
-    x = Conv2D(128, (4,4), activation='relu', padding='same')(x)
-    encoded = MaxPooling2D((2, 2), padding='same')(x)
+    # input_img = keras.Input(shape=(120, 160, 3))
+    # x = Conv2D(32, (4,4), activation='relu', padding='same')(input_img)
+    # x = MaxPooling2D((2, 2), padding='same')(x)
+    # x = Conv2D(64, (4,4), activation='relu', padding='same')(x)
+    # x = MaxPooling2D((2, 2), padding='same')(x)
+    # x = Conv2D(128, (4,4), activation='relu', padding='same')(x)
+    # encoded = MaxPooling2D((2, 2), padding='same')(x)
 
-    # Define the Decoder
-    x = Conv2D(128, (4,4), activation='relu', padding='same')(encoded)
-    x = UpSampling2D((2, 2))(x)
-    x = Conv2D(64, (4,4), activation='relu', padding='same')(x)
-    x = UpSampling2D((2, 2))(x)
-    x = Conv2D(32, (4,4), activation='relu', padding='same')(x)
-    x = UpSampling2D((2, 2))(x)
-    decoded = Conv2D(3, (4,4), activation='sigmoid', padding='same')(x)
+    # # Define the Decoder
+    # x = Conv2D(128, (4,4), activation='relu', padding='same')(encoded)
+    # x = UpSampling2D((2, 2))(x)
+    # x = Conv2D(64, (4,4), activation='relu', padding='same')(x)
+    # x = UpSampling2D((2, 2))(x)
+    # x = Conv2D(32, (4,4), activation='relu', padding='same')(x)
+    # x = UpSampling2D((2, 2))(x)
+    # decoded = Conv2D(3, (4,4), activation='sigmoid', padding='same')(x)
 
-    # Combine Encoder and Decoder
-    autoencoder = keras.Model(input_img, decoded)
+    # # Combine Encoder and Decoder
+    # autoencoder = keras.Model(input_img, decoded)
 
-    # Compile the Model
-    autoencoder.compile(optimizer='adam', loss='mse')   
+    # # Compile the Model
+    # autoencoder.compile(optimizer='adam', loss='mse')   
 
-    autoencoder.fit(X_train, X_train,
-                epochs=20,
-                batch_size=64,
-                shuffle=True,
-                validation_data=(X_test, X_test))
+    # autoencoder.fit(X_train, X_train,
+    #             epochs=5,
+    #             batch_size=64,
+    #             shuffle=True,
+    #             validation_data=(X_test, X_test))
  
     #compare same image as input and output of decoder
     test_samples = [0, 600, 300, 1000]
