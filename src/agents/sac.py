@@ -15,7 +15,7 @@ import random as rndm
 import keras
 from keras.models import model_from_json
 
-tf.random.set_seed(48)
+tf.random.set_seed(77)
 
 class CriticNetwork(keras.Model):
     def __init__(self, n_actions, fc1_dims=256, fc2_dims=256,
@@ -40,11 +40,11 @@ class CriticNetwork(keras.Model):
         self.pool3 = MaxPool2D(pool_size=2, padding='same')
         self.flatten = Flatten()
 
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
+        self._load_pretrained_encoder()
 
     def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
 
         with open(model_path, 'r') as json_file:
             loaded_model_json = json_file.read()
@@ -52,12 +52,13 @@ class CriticNetwork(keras.Model):
 
         loaded_encoder.load_weights(weight_path)
 
+
         self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
+        # self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
         self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
+        # self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
         self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
+        # self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
     def call(self, state, action):
 
@@ -102,11 +103,11 @@ class ValueNetwork(keras.Model):
         self.pool3 = MaxPool2D(pool_size=2, padding='same')
         self.flatten = Flatten()
 
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
+        self._load_pretrained_encoder()
 
     def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
 
         with open(model_path, 'r') as json_file:
             loaded_model_json = json_file.read()
@@ -114,12 +115,13 @@ class ValueNetwork(keras.Model):
 
         loaded_encoder.load_weights(weight_path)
 
+
         self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
+        # self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
         self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
+        # self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
         self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
+        # self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
 
     def call(self, state):
@@ -167,11 +169,11 @@ class ActorNetwork(keras.Model):
         self.pool3 = MaxPool2D(pool_size=2, padding='same')
         self.flatten = Flatten()
 
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
+        self._load_pretrained_encoder()
 
     def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
 
         with open(model_path, 'r') as json_file:
             loaded_model_json = json_file.read()
@@ -180,11 +182,11 @@ class ActorNetwork(keras.Model):
         loaded_encoder.load_weights(weight_path)
 
         self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
+        # self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
         self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
+        # self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
         self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
+        # self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
     def call(self, state):
 
@@ -228,7 +230,7 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.01,
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.001,
                  gamma=0.99, tau=0.005, buffer_size=int(100000), min_size=1000, batch_size=64, reward_scale=1.0, model_name = "SAC_DEMO"):
         """
         * Params

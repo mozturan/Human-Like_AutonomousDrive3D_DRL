@@ -2,6 +2,7 @@
 # src/environment/observations.py
 from abc import ABC, abstractmethod
 import numpy as np
+import cv2
 
 class ObservationType(ABC):
 
@@ -126,11 +127,23 @@ class CameraStack(Camera):
         self.stack = np.roll(self.stack, -1, axis=0)
         self.stack[-1] = self.rgb2gray(state)[:, :, np.newaxis]
 
+        #perform histogram equalization
+        self.stack[-1] = cv2.equalizeHist(self.stack[-1].astype(np.uint8))
+
+        #normalize between 0 and 1
+        self.stack[-1] = self.stack[-1]/255
+
     def reset(self, state):
         """
         Resets the stack with the first image only
         """
         self.stack = np.repeat(self.rgb2gray(state)[np.newaxis, :, :, np.newaxis], self.stack.shape[0], axis=0)
+        
+        #perform histogram equalization
+        self.stack = cv2.equalizeHist(self.stack.astype(np.uint8))
+
+        #normalize between 0 and 1
+        self.stack = self.stack/255
 
     def reshape(self,input_shape, stack):
         stacked_images = stack.reshape((-1,) + input_shape)
@@ -142,24 +155,56 @@ class CameraStack(Camera):
     
 
     # Returns a stack of grayscale images with shape (stack_size, image_shape[0], image_shape[1], 1) when called with a state
+
+class ObservationStacker(Camera):
+    def __init__(self, stack_size, image_shape=(120, 160)):
+        self.stack_size = stack_size
+        self.image_shape = image_shape
+        self.stack = np.zeros((image_shape[0], image_shape[1], stack_size), dtype=np.uint8)
+    def preprocess_image(self, image):
+        # Ensure the image is of type uint8
+        if image.dtype != np.uint8:
+            image = image.astype(np.uint8)
+        # Convert to grayscale
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Perform histogram equalization
+        equalized_image = cv2.equalizeHist(gray_image)
+        return equalized_image /255.0
+    
+    def add_observation(self, image):
+        # Preprocess the image
+        processed_image = self.preprocess_image(image)
+        # Add the new image to the stack, pop the oldest one
+        self.stack = np.roll(self.stack, shift=-1, axis=2)
+        self.stack[:, :, -1] = processed_image
+
+    def reset(self, image):
+        # Preprocess the image
+        processed_image = self.preprocess_image(image)
+        # Fill the stack with the processed image
+        self.stack = np.stack([processed_image] * self.stack_size, axis=2)
+
+    def get_observation(self):
+        return np.array(self.stack)
+
 # def test_return_stack_with_state():
-#         stack_size = 4
+#         stack_size = 3
 #         image_shape = (120, 160)
-#         camera_stack = CameraStack(stack_size, image_shape)
+#         camera_stack = ObservationStacker(stack_size, image_shape)
 #         state = np.ones((image_shape[0], image_shape[1], 3))
-#         camera_stack(state)
+#         camera_stack.add_observation(state)
 #         print(camera_stack.get_observation())
 #         print("----------------------------")
 
-#         camera_stack(state)
+#         camera_stack.add_observation(state)
 #         print(camera_stack.get_observation())
 #         print("----------------------------")
 
-#         camera_stack(state)
+#         camera_stack.add_observation(state)
 #         print(camera_stack.get_observation())
 #         print("----------------------------")
 
-#         camera_stack(state)
+#         camera_stack.add_observation(state)
 #         print(camera_stack.get_observation())
 #         print("----------------------------")
 
@@ -169,11 +214,18 @@ class CameraStack(Camera):
 #         print("----------------------------")
 
 #         state = np.ones((image_shape[0], image_shape[1], 3))
-#         camera_stack(state)
+#         camera_stack.add_observation(state)
 #         print(camera_stack.get_observation())
 
 #         print(camera_stack.get_observation().shape)
 #         # assert result.shape == (stack_size, image_shape[0], image_shape[1], 1)
 
+#         import matplotlib.pyplot as plt
 
+#         # state = np.ones((image_shape[0], image_shape[1], 3))
+#         # camera_stack.reset(state)
+
+#         # print(camera_stack.get_observation())
+#         plt.imshow(camera_stack.get_observation()[:,:,2])
+#         plt.show()
 # test_return_stack_with_state()

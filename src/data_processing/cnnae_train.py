@@ -23,6 +23,8 @@ def load_data(data_dir):
             # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
             img = cv2.equalizeHist(img)
+            # turn it uint9 if it is not
+            img = img.astype('uint8')
             img = img/255.
             # img = rgb2gray(img)
             # img = np.array(img)
@@ -97,7 +99,7 @@ if __name__ == '__main__':
 
     autoencoder = ConvolutionalAutoencoder()
     autoencoder.summary()
-    autoencoder.train(X_train, X_test, epochs=20, batch_size=64)
+    autoencoder.train(X_train, X_test, epochs=100, batch_size=64)
 
     test_samples = [100, 600, 800, 1000]
     visualize_samples(autoencoder, X_test, test_samples)

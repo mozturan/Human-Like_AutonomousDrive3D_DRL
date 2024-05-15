@@ -5,9 +5,9 @@ import numpy as np
 from src.environment.rewards import ConstantSpeedReward
 from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
-from src.environment.observations import CameraStack
 from src.agents import sac
 import time
+from src.environment.observations import ObservationStacker as CameraStack
 
 #TODO: BETTER REWARD FUNCTION
 
@@ -22,7 +22,7 @@ time.sleep(5)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
                              target_speed=1, 
-                             sigma=0.2, action_cost=0.0)
+                             sigma=0.1, action_cost=0.0)
 
 camera = CameraStack(stack_size=3, image_shape=(120, 160))
 
@@ -31,10 +31,10 @@ observation = camera.reset(obs)
 observation = camera.get_observation()
 
 agent = sac.SAC(state_size=observation.shape, action_size=2, 
-                hidden_size=512,min_size=20, buffer_size=100000, 
-                batch_size=16)
+                hidden_size=256,min_size=100, buffer_size=50000, 
+                batch_size=64)
 
-for episode in range(5):
+for i in range(5000):
         obs, reward, done, info = env.reset()
         observation = camera.reset(obs)
         observation = camera.get_observation()
@@ -47,7 +47,7 @@ for episode in range(5):
                 action = agent.choose_action(observation)
                 action = [action[0]/2.0, action[1]/2.0]
                 new_obs, reward, done, new_info = env.step(np.array(action))
-                new_observation = camera(new_obs)
+                new_observation = camera.add_observation(new_obs)
                 new_observation = camera.get_observation()
                 reward = Reward(action, new_info, done)
 
@@ -70,5 +70,3 @@ for episode in range(5):
         print("Memory Count: " , agent.memory.mem_cntr)
 
 env.close()
-
-
