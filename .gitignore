@@ -9,3 +9,4 @@ gym-donkeycar
 /data
 /images
 *.jpg
+__pycache__

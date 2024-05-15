@@ -1,5 +1,5 @@
 import os
-from cnnae import ConvolutionalAutoencoder
+from src.data_processing.cnnae import ConvolutionalAutoencoder
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -97,10 +97,12 @@ if __name__ == '__main__':
 
     autoencoder = ConvolutionalAutoencoder()
     autoencoder.summary()
-    autoencoder.train(X_train, X_test, epochs=10, batch_size=32)
+    autoencoder.train(X_train, X_test, epochs=20, batch_size=64)
 
     test_samples = [100, 600, 800, 1000]
     visualize_samples(autoencoder, X_test, test_samples)
 
+    autoencoder.save(encoder_file="models/autoencoder/encoder_model.json", 
+                     weights_file="models/autoencoder/encoder_weights.h5")
 
 
