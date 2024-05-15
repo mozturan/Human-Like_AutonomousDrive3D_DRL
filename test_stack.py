@@ -25,7 +25,7 @@ Reward = ConstantSpeedReward(max_cte=conf["max_cte"],
                              target_speed=1, 
                              sigma=0.2, action_cost=0.0)
 
-camera = CameraStack(stack_size=2, image_shape=(120, 160))
+camera = CameraStack(stack_size=3, image_shape=(120, 160))
 
 obs, reward, done, info = env.reset()
 observation = camera.reset(obs)

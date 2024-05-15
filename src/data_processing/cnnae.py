@@ -15,8 +15,8 @@ class ConvolutionalAutoencoder:
 
         # Encoder
         for filters in self.num_filters:
-            x = Conv2D(filters, (5,5), activation='relu', padding='same')(x)
-            x = MaxPooling2D((2, 2), padding='same')(x)
+            x = Conv2D(filters, (5,5), activation='relu', padding='same', name="Conv2D_encoder_{}".format(filters))(x)
+            x = MaxPooling2D((2, 2), padding='same', name="MaxPooling2D_encoder_{}".format(filters))(x)
         encoded = x
 
         # Decoder

@@ -13,7 +13,6 @@ import tensorflow_probability as tfp
 import sys
 import random as rndm
 import keras
-from keras.models import model_from_json
 
 tf.random.set_seed(48)
 
@@ -32,42 +31,18 @@ class CriticNetwork(keras.Model):
         self.fc2 = Dense(self.fc2_dims, activation='relu')
         self.q = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, (5,5), activation='relu', padding='same')
-        self.pool1 = MaxPool2D(pool_size=(2,2), padding='same')
-        self.conv2 = Conv2D(64, (5,5), activation='relu', padding='same')
-        self.pool2 = MaxPool2D(pool_size=2, padding='same')
-        self.conv3 = Conv2D(128, (5,5), activation='relu', padding='same')
-        self.pool3 = MaxPool2D(pool_size=2, padding='same')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
-
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
-
-    def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
-
-        with open(model_path, 'r') as json_file:
-            loaded_model_json = json_file.read()
-        loaded_encoder = model_from_json(loaded_model_json)
-
-        loaded_encoder.load_weights(weight_path)
-
-        self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
-        self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
-        self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
     def call(self, state, action):
 
         state_value = self.conv1(state)
-        state_value = self.pool1(state_value)
         state_value = self.conv2(state_value)
-        state_value = self.pool2(state_value)
-        state_value = self.conv3(state_value)
-        state_value = self.pool3(state_value)
-        
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
         state_value = self.flatten(state_value)
 
         #Normalizing action
@@ -94,43 +69,19 @@ class ValueNetwork(keras.Model):
         self.fc2 = Dense(fc2_dims, activation='relu')
         self.v = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, (5,5), activation='relu', padding='same')
-        self.pool1 = MaxPool2D(pool_size=(2,2), padding='same')
-        self.conv2 = Conv2D(64, (5,5), activation='relu', padding='same')
-        self.pool2 = MaxPool2D(pool_size=2, padding='same')
-        self.conv3 = Conv2D(128, (5,5), activation='relu', padding='same')
-        self.pool3 = MaxPool2D(pool_size=2, padding='same')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
-
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
-
-    def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
-
-        with open(model_path, 'r') as json_file:
-            loaded_model_json = json_file.read()
-        loaded_encoder = model_from_json(loaded_model_json)
-
-        loaded_encoder.load_weights(weight_path)
-
-        self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
-        self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
-        self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
 
     def call(self, state):
 
         state_value = self.conv1(state)
-        state_value = self.pool1(state_value)
         state_value = self.conv2(state_value)
-        state_value = self.pool2(state_value)
-        state_value = self.conv3(state_value)
-        state_value = self.pool3(state_value)
-
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
         state_value = self.flatten(state_value)
 
         state_value = self.fc1(state_value)
@@ -139,7 +90,7 @@ class ValueNetwork(keras.Model):
         v = self.v(state_value)
 
         return v
-    
+
 class ActorNetwork(keras.Model):
 
     def __init__(self, max_action, fc1_dims=128,
@@ -159,42 +110,19 @@ class ActorNetwork(keras.Model):
         self.mu = Dense(self.n_actions, activation=None)
         self.sigma = Dense(self.n_actions, activation=None)
 
-        self.conv1 = Conv2D(32, (5,5), activation='relu', padding='same')
-        self.pool1 = MaxPool2D(pool_size=(2,2), padding='same')
-        self.conv2 = Conv2D(64, (5,5), activation='relu', padding='same')
-        self.pool2 = MaxPool2D(pool_size=2, padding='same')
-        self.conv3 = Conv2D(128, (5,5), activation='relu', padding='same')
-        self.pool3 = MaxPool2D(pool_size=2, padding='same')
+        self.conv1 = Conv2D(32, 4, strides=2, activation='relu')
+        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        self.conv3 = Conv2D(128, 4, strides=2, activation='relu')
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
 
-        self._load_pretrained_encoder("model/autoencode/encoder_model.h5")
-
-    def _load_pretrained_encoder(self, 
-                                 model_path="model/autoencode/encoder_model.json", 
-                                 weight_path="model/autoencode/encoder_weights.h5"):
-
-        with open(model_path, 'r') as json_file:
-            loaded_model_json = json_file.read()
-        loaded_encoder = model_from_json(loaded_model_json)
-
-        loaded_encoder.load_weights(weight_path)
-
-        self.conv1.set_weights(loaded_encoder.layers[0].get_weights())
-        self.pool1.set_weights(loaded_encoder.layers[1].get_weights())
-        self.conv2.set_weights(loaded_encoder.layers[2].get_weights())
-        self.pool2.set_weights(loaded_encoder.layers[3].get_weights())
-        self.conv3.set_weights(loaded_encoder.layers[4].get_weights())
-        self.pool3.set_weights(loaded_encoder.layers[5].get_weights())
 
     def call(self, state):
 
         state_value = self.conv1(state)
-        state_value = self.pool1(state_value)
         state_value = self.conv2(state_value)
-        state_value = self.pool2(state_value)
-        state_value = self.conv3(state_value)
-        state_value = self.pool3(state_value)
-
+        # state_value = self.conv3(state_value)
+        state_value = self.maxpool(state_value)
         state_value = self.flatten(state_value)
 
         prob = self.fc1(state_value)
