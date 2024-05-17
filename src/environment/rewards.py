@@ -22,9 +22,19 @@ class RewardType(ABC):
     @abstractmethod
     def _reward(self, action, info, done):
         pass
+
+    def reset(self):
+        pass
     
 #! I might want to change its name
 class ConstantSpeedReward(RewardType):
+    MIN_THROTTLE = 0.0
+    MAX_THROTTLE = 1.0
+    MIN_STEERING = -1.0
+    MAX_STEERING = 1.0
+    STEERING_DIFF = 0.15
+    SHAKE_REWARD_WEIGHT = 1.0
+    THROTTLE_REWARD_WEIGHT = 5.0
 
     def __init__(self,max_cte, target_speed, sigma, action_cost):
         
@@ -54,11 +64,9 @@ class ConstantSpeedReward(RewardType):
         (cte, speed, forward_vel) = self._preprocess(info)
 
         if done:
-            return -1.0
-        if cte > self.max_cte:
-            return -1.0
+            return self._calculate_done_reward(throttle=action[1], done=done)
         if forward_vel < 0.0:
-            return forward_vel
+            return 10*forward_vel
   
         reward_cte = self._calculate_cte_reward(cte)
         reward_speed = self._calculate_speed_reward(speed)
@@ -75,3 +83,62 @@ class ConstantSpeedReward(RewardType):
     def _calculate_action_reward(self, action) -> float:
         return self.action_cost * np.linalg.norm(action)
     
+    def _calculate_done_reward(self, throttle, done) -> float:
+            norm_throttle = (abs(throttle) - self.MIN_THROTTLE) / (self.MAX_THROTTLE - self.MIN_THROTTLE)
+            return (-10 - (norm_throttle * self.THROTTLE_REWARD_WEIGHT)) * done
+
+class AdvancedReward(ConstantSpeedReward):
+    
+    #! These are the default values
+    #! Might need another way of config
+    
+    MIN_THROTTLE = 0.0
+    MAX_THROTTLE = 1.0
+    MIN_STEERING = -1.0
+    MAX_STEERING = 1.0
+    STEERING_DIFF = 0.15
+    SHAKE_REWARD_WEIGHT = 1.0
+    THROTTLE_REWARD_WEIGHT = 5.0
+
+    def __init__(self, max_cte, target_speed, sigma, action_cost):
+        super().__init__(max_cte, target_speed, sigma, action_cost)
+        self.last_steering = 0.
+        self.last_throttle = 0.
+
+    def _reward(self, action, info, done) -> float:
+        (cte, speed, forward_vel) = self._preprocess(info)
+
+        if done:
+            return self._calculate_done_reward(throttle=action[1], done=done)
+        if forward_vel < 0.0:
+            return -10+forward_vel
+  
+        reward_cte = self._calculate_cte_reward(cte)
+        reward_speed = self._calculate_speed_reward(speed)
+        reward_action = self._calculate_action_reward(action)
+        reward_shake = self._calculate_shake_reward(steering=action[0])
+
+        self.last_steering = action[0]
+        self.last_throttle = action[1]
+
+        return (reward_cte * reward_speed) # - reward_action - reward_shake
+
+    def _calculate_shake_reward(self, steering) -> float:
+
+        steering_dif = (steering - self.last_steering) / (self.MAX_STEERING - self.MIN_STEERING)
+
+        if abs(steering_dif) > self.STEERING_DIFF:
+            err = abs(steering_dif) - self.STEERING_DIFF
+            shake_reward =(err**2) * self.SHAKE_REWARD_WEIGHT
+
+        else:
+            shake_reward = 0.0
+        return shake_reward * self.SHAKE_REWARD_WEIGHT
+    
+    def _calculate_done_reward(self, throttle, done) -> float:
+            norm_throttle = (abs(throttle) - self.MIN_THROTTLE) / (self.MAX_THROTTLE - self.MIN_THROTTLE)
+            return (-10 - (norm_throttle * self.THROTTLE_REWARD_WEIGHT)) * done
+        
+    def reset(self):
+        self.last_steering = 0.
+        self.last_throttle = 0.

@@ -16,7 +16,7 @@ conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
-                             target_speed=3, 
+                             target_speed=2, 
                              sigma=3, action_cost=0.0)
 
 camera = Camera()

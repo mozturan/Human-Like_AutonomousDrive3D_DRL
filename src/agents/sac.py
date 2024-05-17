@@ -15,7 +15,7 @@ import random as rndm
 import keras
 from keras.models import model_from_json
 
-tf.random.set_seed(77)
+tf.random.set_seed(5)
 
 class CriticNetwork(keras.Model):
     def __init__(self, n_actions, fc1_dims=256, fc2_dims=256,
@@ -230,7 +230,7 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.001,
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.01,
                  gamma=0.99, tau=0.005, buffer_size=int(100000), min_size=1000, batch_size=64, reward_scale=1.0, model_name = "SAC_DEMO"):
         """
         * Params
@@ -282,7 +282,7 @@ class SAC:
         self.gamma = gamma
         self.tau = tau
         
-        self.actor = ActorNetwork(max_action=1.0, fc1_dims=hidden_size, fc2_dims=hidden_size,
+        self.actor = ActorNetwork(max_action=0.5, fc1_dims=hidden_size, fc2_dims=hidden_size,
                                   n_actions=action_size, name='actor')
         self.critic_1 = CriticNetwork(n_actions=action_size, fc1_dims=hidden_size,
                                       fc2_dims=hidden_size, name='critic_1')
