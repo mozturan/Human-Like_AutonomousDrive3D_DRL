@@ -21,3 +21,4 @@ Autonomous driving task in a 3D simulation environment called "*DonkeyCar Sim*" 
 
 ## Examples of learning progress
 
+![sac-05-1523-29-22-ezgif com-optimize](https://github.com/9Xxi8Q4f/donkeycar_rl/assets/89272933/95d73c5e-526b-41df-b3da-e2bcfad561be)
