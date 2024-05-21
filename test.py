@@ -6,7 +6,7 @@ from src.environment.rewards import ConstantSpeedReward
 from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
 from src.environment.observations import Camera
-from src.agents import sac
+from src.agents import sac_o as sac
 
 START_ACTION = [0.0,0.0]
 score_history = []
@@ -17,7 +17,7 @@ env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
                              target_speed=2, 
-                             sigma=3, action_cost=0.0)
+                             sigma=1, action_cost=0.0)
 
 camera = Camera()
 

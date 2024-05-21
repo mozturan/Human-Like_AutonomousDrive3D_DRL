@@ -1,5 +1,5 @@
 import os
-from src.data_processing.cnnae import ConvolutionalAutoencoder
+from cnnae import ConvolutionalAutoencoder
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -26,13 +26,15 @@ def load_data(data_dir):
             # turn it uint9 if it is not
             img = img.astype('uint8')
             img = img/255.
-            # img = rgb2gray(img)
-            # img = np.array(img)
+            #expand dims to shape (120,160,1)
+            img = np.expand_dims(img, axis=2)
             images.append(img)
         return images
 
     images = load_images_from_path(data_dir)
-    dataset = np.array([np.dstack((images[i], images[i+1], images[i+2])) for i in range(len(images)-2)])
+    # dataset = np.array([np.dstack((images[i], images[i+1], images[i+2])) for i in range(len(images)-2)])
+
+    dataset = np.array(images)
 
     return dataset
 
@@ -81,7 +83,7 @@ def visualize_samples(autoencoder, X_test, test_samples):
         img = X_test[sample]
         pred = preds[i]
 
-        ax[i, 0].imshow(img)
+        ax[i, 0].imshow(img, cmap='gray')
         ax[i, 1].imshow(pred[0])
 
     plt.show()
@@ -99,7 +101,7 @@ if __name__ == '__main__':
 
     autoencoder = ConvolutionalAutoencoder()
     autoencoder.summary()
-    autoencoder.train(X_train, X_test, epochs=100, batch_size=64)
+    autoencoder.train(X_train, X_test, epochs=1, batch_size=64)
 
     test_samples = [100, 600, 800, 1000]
     visualize_samples(autoencoder, X_test, test_samples)
