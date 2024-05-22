@@ -2,6 +2,7 @@
 # src/environment/observations.py
 from abc import ABC, abstractmethod
 import numpy as np
+from scipy.ndimage import gaussian_filter
 
 class ObservationType(ABC):
 
@@ -94,6 +95,9 @@ class Camera(ObservationType):
         Process the input and creates a new observation
         """
         image = self.rgb2gray(state)
+        image = self.crop_image(image)
+        image = self.preprocess_image(image)
+        image = self.blur_image(image)
         image = np.expand_dims(image, axis=-1)
         return image
 
@@ -103,5 +107,22 @@ class Camera(ObservationType):
         """
         return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
+    def crop_image(self, image):
+        return image[40:120, :]
+        
+    def preprocess_image(self, image):
+        """
+        Preprocess the image by normalizing it and converting it to uint8
+        """
+        image = np.clip(image, 0, 255)
+        image = image.astype(np.uint8)
+        return image / 255.0
+
+    
+    def blur_image(self, image, sigma = 2):
+        """
+        Blurs the image using a Gaussian Blur
+        """        
+        return gaussian_filter(image, sigma=2)
 
 

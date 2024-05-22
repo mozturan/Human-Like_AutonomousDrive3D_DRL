@@ -16,15 +16,16 @@ conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
-                             target_speed=3, 
-                             sigma=3, action_cost=0.0)
+                             target_speed=3.0, 
+                             sigma=1.0, action_cost=0.0)
 
 camera = Camera()
 
 obs, reward, done, info = env.reset()
 observation = camera(obs)
+print(observation.shape)
 
-agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=100)
+agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=70)
 
 for episode in range(5000):
         obs, reward, done, info = env.reset()

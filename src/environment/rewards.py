@@ -55,8 +55,6 @@ class ConstantSpeedReward(RewardType):
 
         if done:
             return -1.0
-        if cte > self.max_cte:
-            return -1.0
         if forward_vel < 0.0:
             return -1.0
   
@@ -64,7 +62,7 @@ class ConstantSpeedReward(RewardType):
         reward_speed = self._calculate_speed_reward(speed)
         reward_action = self._calculate_action_reward(action)
 
-        return (reward_cte * reward_speed) - reward_action
+        return (reward_cte * reward_speed) #- reward_action
 
     def _calculate_cte_reward(self, cte) -> float:
         return (1.0 - abs((cte/self.max_cte)))
