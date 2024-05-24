@@ -38,8 +38,9 @@ for episode in range(5000):
                 action = agent.choose_action(observation)
                 new_obs, reward, done, new_info = env.step(np.array(action))
                 new_observation = kinematics(action, new_info)
-                reward = Reward(action, new_info, done)
-                print(new_info)
+                # reward = Reward(action, new_info, done)
+                print(done)
+                print(info["cte"])
                 episode_reward += reward
                 episode_len +=1
 
