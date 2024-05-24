@@ -25,7 +25,7 @@ obs, reward, done, info = env.reset()
 observation = camera(obs)
 print(observation.shape)
 
-agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=70)
+agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=1024,min_size=70)
 
 for episode in range(5000):
         obs, reward, done, info = env.reset()
@@ -36,6 +36,7 @@ for episode in range(5000):
 
         while not done:
                 # action = env.action_space.sample() #! does this work?
+
                 action = agent.choose_action(observation)
                 new_obs, reward, done, new_info = env.step(np.array(action))
                 new_observation = camera(new_obs)

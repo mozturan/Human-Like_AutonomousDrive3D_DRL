@@ -6,9 +6,8 @@ import keras
 from keras.optimizers.legacy import Adam
 
 class ConvolutionalAutoencoder:
-    def __init__(self, input_shape=(120, 160), num_filters=[32, 64, 128]):
+    def __init__(self, input_shape=(80, 160)):
         self.input_shape = input_shape
-        self.num_filters = num_filters
         self.autoencoder = self.build_autoencoder()
 
     def build_autoencoder(self):
@@ -17,38 +16,22 @@ class ConvolutionalAutoencoder:
         #expand dims
         x = keras.layers.Reshape((self.input_shape[0], self.input_shape[1], 1))(x)
 
-        # Encoder
-        # for filters in self.num_filters:
-        #     x = Conv2D(filters, (4,4), activation='relu', padding='same', name="Conv2D_encoder_{}".format(filters))(x)
-        #     x = MaxPooling2D((2, 2), padding='same', name="MaxPooling2D_encoder_{}".format(filters))(x)
-        # encoded = x
-
         #Encoder
-        x = Conv2D(32, 8, strides=4, activation='relu')(x)
-        x = Conv2D(64, 4, strides=2, activation='relu')(x)
-        x = Conv2D(64, 3, strides=1, activation='relu')(x)
-        x = MaxPool2D(pool_size=2, strides=1, name= "MaxPool2D")(x)
-        x = Flatten(name = "Flatten")(x)
+        x = Conv2D(32, 8, strides=2, activation='relu', padding='same')(x)
+        x = Conv2D(64, 4, strides=2, activation='relu', padding='same')(x)
+        x = Conv2D(64, 3, strides=2, activation='relu', padding='same')(x)
+        encoded = MaxPooling2D(pool_size=2, strides=1, name="MaxPool2D")(x)        # x = Flatten(name = "Flatten",data_format='channels_last')(x)
 
-        # Decoder
-        x = Dense(2048, activation='relu')(x)
-        x = Reshape((7,7,64))(x)
-        x = Conv2DTranspose(64, 3, strides=1, activation='relu', padding='same')(x)
-        x = Conv2DTranspose(64, 3, strides=2, activation='relu', padding='same')(x)
-        x = Conv2DTranspose(32, 4, strides=2, activation='relu', padding='same')(x)
-        x = Conv2DTranspose(3, 8, strides=4, activation='sigmoid', padding='same')(x)
-        decoded = x
-        # # Decoder 
-        # for filters in reversed(self.num_filters):
-        #     x = Conv2D(filters, (4,4), activation='relu', padding='same')(x)
-        #     x = UpSampling2D((2, 2))(x)
-        # decoded = Conv2D(3, (4,4), activation='sigmoid', padding='same')(x)
-
+        # x = Conv2DTranspose(64, 3, strides=2, activation='relu', padding='same')(encoded)
+        x = Conv2DTranspose(64, 4, strides=2, activation='relu', padding='same')(x)
+        x = Conv2DTranspose(32, 8, strides=2, activation='relu', padding='same')(x)
+        decoded = Conv2DTranspose(1, 8, strides=2, activation='sigmoid', padding='same')(x)
+        
         autoencoder = keras.Model(input_img, decoded)
         autoencoder.compile(optimizer=Adam(0.001), loss='mse')
         return autoencoder    
     
-    def train(self, X_train, X_test, epochs=50, batch_size=64):
+    def train(self, X_train, X_test, epochs=10, batch_size=64):
         self.autoencoder.fit(X_train, X_train,
                              epochs=epochs,
                              batch_size=batch_size,
@@ -70,8 +53,28 @@ class ConvolutionalAutoencoder:
         self.autoencoder.summary()
 
     def save(self, encoder_file="encoder_model.json", weights_file="encoder_weights.h5"):
-        encoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.get_layer(index=-7).output)
+        encoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.get_layer(index=-2).output)
         encoder_json = encoder.to_json()
         with open(encoder_file, "w") as json_file:
             json_file.write(encoder_json)
         encoder.save_weights(weights_file)
+
+    def backup(self):
+
+        #Encoder
+        x = Conv2D(32, 4, strides=2, activation='relu', padding='same')(x)
+        x = Conv2D(64, 4, strides=2, activation='relu', padding='same')(x)
+        x = Conv2D(64, 3, strides=1, activation='relu', padding='same')(x)
+        encoded = MaxPooling2D(pool_size=2, strides=1, name="MaxPool2D")(x)        # x = Flatten(name = "Flatten",data_format='channels_last')(x)
+
+        # Decoder
+        x = Conv2D(64, (3, 3), strides=2, activation='relu', padding='same')(encoded)
+        x = UpSampling2D(size=(2, 2))(x)
+        x = Conv2D(64, (4, 4), strides=2, activation='relu', padding='same')(x)
+        x = UpSampling2D(size=(2, 2))(x)
+        x = Conv2D(32, (4,4), strides=2, activation='relu', padding='same')(x)
+        x = UpSampling2D(size=(4,4))(x)
+        decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+        decoded = UpSampling2D(size=(2,2))(decoded)
+
+        

@@ -31,11 +31,16 @@ class CriticNetwork(keras.Model):
         self.fc2 = Dense(self.fc2_dims, activation='relu')
         self.q = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
-        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        encoder = self._load_pretrained_encoder()
+        self.conv1 = encoder.get_layer(index = 1)
+        self.conv2 = encoder.get_layer(index = 2)
+        self.conv3 = encoder.get_layer(index = 3)
         self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
+
+        # self.conv1 = Conv2D(32, 8, strides=2, activation='relu', padding='same')
+        # self.conv2 = Conv2D(64, 4, strides=2, activation='relu', padding='same')
+        # self.conv3 = Conv2D(64, 3, strides=2, activation='relu', padding='same')
 
     def call(self, state, action):
 
@@ -45,9 +50,6 @@ class CriticNetwork(keras.Model):
         state_value = self.maxpool(state_value)
         state_value = self.flatten(state_value)
 
-        #Normalizing action
-        # action = (action+1.)/2. #* Normalize between 0 and 1
-
         action_value = self.fc1(tf.concat([state_value, action], axis=1))
         action_value = self.fc2(action_value)
 
@@ -55,6 +57,18 @@ class CriticNetwork(keras.Model):
 
         return q
 
+    def _load_pretrained_encoder(self, 
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
+
+        with open(model_path, "r") as json_file:
+            loaded_model_json = json_file.read()
+        encoder = keras.models.model_from_json(loaded_model_json)
+
+        encoder.load_weights(weight_path)
+
+        return encoder
+    
 class ValueNetwork(keras.Model):
     def __init__(self, fc1_dims=256, fc2_dims=256,
             name='value', chkpt_dir='tmp/sac'):
@@ -69,9 +83,15 @@ class ValueNetwork(keras.Model):
         self.fc2 = Dense(fc2_dims, activation='relu')
         self.v = Dense(1, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
-        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+
+        encoder = self._load_pretrained_encoder()
+        self.conv1 = encoder.get_layer(index = 1)
+        self.conv2 = encoder.get_layer(index = 2)
+        self.conv3 = encoder.get_layer(index = 3)
+
+        # self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        # self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        # self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
         self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
 
@@ -90,6 +110,18 @@ class ValueNetwork(keras.Model):
         v = self.v(state_value)
 
         return v
+    
+    def _load_pretrained_encoder(self, 
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
+
+        with open(model_path, "r") as json_file:
+            loaded_model_json = json_file.read()
+        encoder = keras.models.model_from_json(loaded_model_json)
+
+        encoder.load_weights(weight_path)
+
+        return encoder
 
 class ActorNetwork(keras.Model):
 
@@ -105,17 +137,24 @@ class ActorNetwork(keras.Model):
         self.max_action = max_action
         self.noise = 1e-6
 
+        # Gaussian noise
+        self.noise = np.random.normal(0, 0.2, 1)
+
         self.fc1 = Dense(self.fc1_dims, activation='relu')
         self.fc2 = Dense(self.fc2_dims, activation='relu')
         self.mu = Dense(self.n_actions, activation=None)
         self.sigma = Dense(self.n_actions, activation=None)
 
-        self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
-        self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
-        self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
-        self.maxpool = MaxPool2D(pool_size=2, strides=1)
+        # self.conv1 = Conv2D(32, 8, strides=4, activation='relu')
+        # self.conv2 = Conv2D(64, 4, strides=2, activation='relu')
+        # self.conv3 = Conv2D(64, 3, strides=1, activation='relu')
+        # self.maxpool = MaxPool2D(pool_size=2, strides=1)
         self.flatten = Flatten()
-
+        encoder = self._load_pretrained_encoder()
+        self.conv1 = encoder.get_layer(index = 2)
+        self.conv2 = encoder.get_layer(index = 3)
+        self.conv3 = encoder.get_layer(index = 4)
+        self.maxpool = MaxPool2D(pool_size=2, strides=1)
 
     def call(self, state):
 
@@ -135,6 +174,18 @@ class ActorNetwork(keras.Model):
         sigma = tf.clip_by_value(sigma, self.noise, 1)
 
         return mu, sigma
+
+    def _load_pretrained_encoder(self, 
+                                 model_path="models/autoencoder/encoder_model.json", 
+                                 weight_path="models/autoencoder/encoder_weights.h5"):
+
+        with open(model_path, "r") as json_file:
+            loaded_model_json = json_file.read()
+        encoder = keras.models.model_from_json(loaded_model_json)
+
+        encoder.load_weights(weight_path)
+
+        return encoder
 
     def sample_normal(self, state, reparameterize=True):
         mu, sigma = self.call(state)
@@ -156,7 +207,7 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.001,
+    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=256, temperature=0.005,
                  gamma=0.99, tau=0.005, buffer_size=int(10000), min_size=1000, batch_size=64, reward_scale=1.0, model_name = "SAC_DEMO"):
         """
         * Params
