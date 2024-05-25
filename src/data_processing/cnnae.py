@@ -5,10 +5,12 @@ from keras.layers import (Conv2D, MaxPooling2D,
 import keras
 from keras.optimizers.legacy import Adam
 import numpy as np
+import os
 
 class ConvolutionalAutoencoder:
-    def __init__(self, input_shape=(120, 160)):
+    def __init__(self, input_shape=(80, 160, 3), z_size=16):
         self.input_shape = input_shape
+        self.z_size = z_size
         self.autoencoder = self.build_autoencoder()
 
     def build_autoencoder(self):
@@ -47,6 +49,7 @@ class ConvolutionalAutoencoder:
 
         autoencoder = keras.Model(input_img, decoded)
         autoencoder.compile(optimizer=Adam(0.001), loss='mse')
+        # self.encoder = keras.Model(input_img, encode_linear)
         return autoencoder    
     
     def train(self, X_train, X_test, epochs=100, batch_size=64):
@@ -70,7 +73,16 @@ class ConvolutionalAutoencoder:
         print("Autoencoder Architecture:")
         self.autoencoder.summary()
 
-    def save(self, encoder_file="encoder_model.json", weights_file="encoder_weights.h5"):
+    
+    def save_encoder(self, model_folder="models/encoder/"):
+        """
+        Saves the encoder model to a json file and the weights to a h5 file
+        """
+        os.makedirs(os.path.dirname(model_folder), exist_ok=True)
+
+        encoder_file = os.path.join(model_folder) + "encoder_model.json"
+        weights_file = os.path.join(model_folder) + "encoder_weights.h5"
+        #Create the folder if it doesn't exist
         encoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.get_layer(index=-7).output)
         encoder_json = encoder.to_json()
         with open(encoder_file, "w") as json_file:
@@ -78,3 +90,21 @@ class ConvolutionalAutoencoder:
         encoder.save_weights(weights_file)
 
 
+    def load_encoder(self, model_folder="models/encoder/encoder_model.json"):
+        """
+        Loads the encoder model from a json file and the weights from a h5 file
+        """
+        encoder_file = os.path.join(model_folder) + "encoder_model.json"
+        weights_file = os.path.join(model_folder) + "encoder_weights.h5"
+
+        with open(encoder_file, "r") as json_file:
+            encoder_json = json_file.read()
+        encoder = keras.models.model_from_json(encoder_json)
+        encoder.load_weights(weights_file)
+
+        return encoder
+    
+    #load and predict
+    def load_and_predict(self, image):
+        model = self.load_encoder()
+        return model.predict(image)
