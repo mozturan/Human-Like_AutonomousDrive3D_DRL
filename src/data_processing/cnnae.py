@@ -89,6 +89,20 @@ class ConvolutionalAutoencoder:
             json_file.write(encoder_json)
         encoder.save_weights(weights_file)
 
+    def save_ae(self, model_folder="models/ae/"):
+        """
+        Saves the decoder model to a json file and the weights to a h5 file
+        """
+        os.makedirs(os.path.dirname(model_folder), exist_ok=True)
+
+        decoder_file = os.path.join(model_folder) + "ae_model.json"
+        weights_file = os.path.join(model_folder) + "ae_weights.h5"
+        #Create the folder if it doesn't exist
+        decoder = keras.Model(inputs=self.autoencoder.input, outputs=self.autoencoder.output)
+        decoder_json = decoder.to_json()
+        with open(decoder_file, "w") as json_file:
+            json_file.write(decoder_json)
+        decoder.save_weights(weights_file)
 
     def load_encoder(self, model_folder="models/encoder/encoder_model.json"):
         """
