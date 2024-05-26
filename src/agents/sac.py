@@ -164,7 +164,7 @@ class SAC:
         self.gamma = gamma
         self.tau = tau
         
-        self.actor = ActorNetwork(max_action=1.0, fc1_dims=hidden_size, fc2_dims=hidden_size,
+        self.actor = ActorNetwork(max_action=0.5, fc1_dims=hidden_size, fc2_dims=hidden_size,
                                   n_actions=action_size, name='actor')
         self.critic_1 = CriticNetwork(n_actions=action_size, fc1_dims=hidden_size,
                                       fc2_dims=hidden_size, name='critic_1')
