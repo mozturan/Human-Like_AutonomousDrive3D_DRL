@@ -86,28 +86,21 @@ class Camera(ObservationType):
     """
 
     def __init__(self):
-        # Implement for later
+        # LOAD THE AE MODEL
+
         pass
 
     def __call__(self, state):
         """
         Process the input and creates a new observation
         """
-        image = self.rgb2gray(state)
         image = self.crop_image(image)
         image = self.preprocess_image(image)
-        image = self.blur_image(image)
-        image = np.expand_dims(image, axis=-1)
+        image = self.reduction(image)
         return image
 
-    def rgb2gray(self, rgb):
-        """
-        Converts an RGB image to grayscale
-        """
-        return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
-
     def crop_image(self, image):
-        return image[40:120, :]
+        return image[40:120, :, :]
         
     def preprocess_image(self, image):
         """
@@ -117,9 +110,10 @@ class Camera(ObservationType):
         image = image.astype(np.uint8)
         return image / 255.0
 
-    
-    def blur_image(self, image, sigma = 2):
-        """
-        Blurs the image using a Gaussian Blur
-        """        
-        return gaussian_filter(image, sigma=2)
+    def load_ae(self, model_folder="models/ae/"):
+        pass
+
+    def reduction(self, image):
+        image= np.expand_dims(image, axis=0)
+
+        return image

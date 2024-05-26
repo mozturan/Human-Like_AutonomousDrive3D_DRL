@@ -11,7 +11,7 @@ from pygame.locals import *  # noqa: F403
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", help="Path to folder where images will be saved", 
-                    type=str, default="data/human")
+                    type=str, default="data/human_A")
 parser.add_argument("-n", "--max-steps", help="Max number of steps", 
                     type=int, default=10000)
 args = parser.parse_args()
@@ -127,7 +127,9 @@ for frame_num in range(total_frames):
 
     path = os.path.join(output_folder, f"{frame_num}.jpg")
     # Convert to BGR
-    cv2.imwrite(path, obs[:, :, ::-1])
+    # cv2.imwrite(path, obs[:, :, ::-1])
+    cv2.imwrite(path, obs)
+
     if done:
         obs = env.reset()
         control_throttle, control_steering = 0, 0

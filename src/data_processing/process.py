@@ -12,13 +12,12 @@ def load_data(data_dir):
 
     for filename in os.listdir(data_dir)[:-1]:
         img_path = os.path.join(data_dir, filename)
-        img = cv2.imread(img_path)#, cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(img_path, cv2.COLOR_RGB2BGR)
         originals.append(img)
 
         img = np.array(img)
         img = crop_image(img)
         img = preprocess_image(img)
-        # img = np.expand_dims(img, axis=2)
         images.append(img)
 
     dataset = np.array(images)

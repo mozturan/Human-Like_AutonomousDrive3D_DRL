@@ -7,6 +7,8 @@ from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
 from src.environment.observations import Kinematics
 from src.agents import sac
+import matplotlib.pyplot as plt
+import cv2
 
 START_ACTION = [0.0,0.0]
 score_history = []
@@ -23,6 +25,12 @@ kinematics = Kinematics()
 
 obs, reward, done, info = env.reset()
 observation = kinematics(START_ACTION, info)
+
+print(obs)
+print(obs.shape)
+plt.imshow(obs)
+plt.show()
+cv2.imwrite("test.png", obs)
 
 agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=100)
 
