@@ -23,6 +23,7 @@ kinematics = Kinematics()
 
 obs, reward, done, info = env.reset()
 observation = kinematics(START_ACTION, info)
+print(observation.shape)
 
 agent = ddqn.DDQN(state_size=observation.shape, steering_container = 5, throttle_container=4)
 

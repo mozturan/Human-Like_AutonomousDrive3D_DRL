@@ -5,10 +5,11 @@ import numpy as np
 from src.environment.rewards import ConstantSpeedReward
 from src.utils.config_loader import load_config, CONFIG_PATH
 # from src.agents.ddqn import ddqn
-from src.environment.observations import Kinematics
+from src.environment.observations import Camera as Kinematics
 from src.agents import sac
 import matplotlib.pyplot as plt
 import cv2
+import tensorflow as tf
 
 START_ACTION = [0.0,0.0]
 score_history = []
@@ -24,13 +25,8 @@ Reward = ConstantSpeedReward(max_cte=conf["max_cte"],
 kinematics = Kinematics()
 
 obs, reward, done, info = env.reset()
-observation = kinematics(START_ACTION, info)
-
-print(obs)
-print(obs.shape)
-plt.imshow(obs)
-plt.show()
-cv2.imwrite("test.png", obs)
+# observation = kinematics(START_ACTION, info)
+observation = kinematics(obs)
 
 agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=100)
 

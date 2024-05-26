@@ -2,7 +2,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from scipy.ndimage import gaussian_filter
-
+from keras.models import model_from_json as load
+import os
 class ObservationType(ABC):
 
     @abstractmethod
@@ -79,7 +80,6 @@ class Kinematics(ObservationType):
 
         return np.array(values)
 
-
 class Camera(ObservationType):
     """
     Class for creating a camera observation
@@ -87,17 +87,18 @@ class Camera(ObservationType):
 
     def __init__(self):
         # LOAD THE AE MODEL
-
+        self.encoder = self.load_ae()
+        self.encoder.summary()
         pass
 
-    def __call__(self, state):
+    def __call__(self, image):
         """
         Process the input and creates a new observation
         """
         image = self.crop_image(image)
         image = self.preprocess_image(image)
-        image = self.reduction(image)
-        return image
+        encoded = self.reduction(image)
+        return np.array(encoded[0])
 
     def crop_image(self, image):
         return image[40:120, :, :]
@@ -110,10 +111,22 @@ class Camera(ObservationType):
         image = image.astype(np.uint8)
         return image / 255.0
 
-    def load_ae(self, model_folder="models/ae/"):
-        pass
+    def load_ae(self, model_folder="models/encoder/"):
+        """
+        Loads the encoder model from a json file and the weights from a h5 file
+        """
+
+        encoder_file = os.path.join(model_folder) + "encoder_model.json"
+        weights_file = os.path.join(model_folder) + "encoder_weights.h5"
+
+        with open(encoder_file, "r") as json_file:
+            encoder_json = json_file.read()
+        encoder = load(encoder_json)
+        encoder.load_weights(weights_file)
+
+        return encoder
 
     def reduction(self, image):
         image= np.expand_dims(image, axis=0)
-
+        image = self.encoder.predict(image)
         return image
