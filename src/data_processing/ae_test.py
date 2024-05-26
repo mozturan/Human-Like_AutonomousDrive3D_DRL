@@ -46,11 +46,7 @@ xx= np.expand_dims(X_test[100], axis=0)
 
 
 predicted = encoder.predict(xx)
-print(predicted)
-
-
 decoded = decoder.predict(xx)
-print(decoded)
 
 # visualize original and decoded
 
