@@ -1,6 +1,8 @@
 from process import *
 import keras
 import time
+import matplotlib.pyplot as plt
+
 def load_encoder(model_folder="models/encoder/"):
         """
         Loads the encoder model from a json file and the weights from a h5 file
@@ -35,21 +37,30 @@ time.sleep(5)
 decoder = load_ae()
 decoder.summary()
 
-
-data_dir = '/home/o/Documents/donkeycar_rl/data/human'
+# '/home/o/Documents/donkeycar_rl/data/test_images'
+data_dir = '/home/o/Documents/donkeycar_rl/data/test_images/'
 images, originals = load_data(data_dir)
 
-X_train, X_test, y_train, y_test = prepare_data(images)
-print(X_test.shape)
-print(X_test[100].shape)
-xx= np.expand_dims(X_test[100], axis=0)
+# X_train, X_test, y_train, y_test = prepare_data(images)
+
+for image in images:
+    print(image.shape)
+    xx= np.expand_dims(image, axis=0)
+    predicted = encoder.predict(xx)
+    decoded = decoder.predict(xx)
+
+    #visualize
+
+    fig, ax = plt.subplots(1, 2)
+    ax[0].imshow(image)
+    # ax[1].imshow(predicted[0])
+    ax[1].imshow(decoded[0])
+    plt.show()
 
 
-predicted = encoder.predict(xx)
-decoded = decoder.predict(xx)
 
 # visualize original and decoded
 
-visualize_samples(decoder, X_test, [100,500,1000,1500])
+# visualize_samples(decoder, X_test, [100,500,1000,1500])
 
 
