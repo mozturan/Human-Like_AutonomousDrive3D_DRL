@@ -3,7 +3,7 @@ import keras
 import time
 import matplotlib.pyplot as plt
 
-def load_encoder(model_folder="models/encoder/"):
+def load_encoder(model_folder="models/encoder_tracks/"):
         """
         Loads the encoder model from a json file and the weights from a h5 file
         """
@@ -17,7 +17,7 @@ def load_encoder(model_folder="models/encoder/"):
 
         return encoder
 
-def load_ae(model_folder="models/ae/"):
+def load_ae(model_folder="models/ae_tracks/"):
         """
         Loads the decoder model from a json file and the weights from a h5 file
         """
@@ -32,35 +32,31 @@ def load_ae(model_folder="models/ae/"):
         return decoder
 
 encoder = load_encoder()
-encoder.summary()
-time.sleep(5)
 decoder = load_ae()
-decoder.summary()
 
 # '/home/o/Documents/donkeycar_rl/data/test_images'
-data_dir = '/home/o/Documents/donkeycar_rl/data/test_images/'
+data_dir = '/home/o/Documents/donkeycar_rl/data/generated_track_human/'
 images, originals = load_data(data_dir)
 
 # X_train, X_test, y_train, y_test = prepare_data(images)
-
-for image in images:
-    print(image.shape)
-    xx= np.expand_dims(image, axis=0)
+test_samples = [100, 500, 1000, 1500]
+decodeds = []
+for sample in test_samples:
+    xx= np.expand_dims(images[sample], axis=0)
     predicted = encoder.predict(xx)
     decoded = decoder.predict(xx)
+    decodeds.append(decoded)
 
-    #visualize
+    fig, ax = plt.subplots(2, 2)
 
-    fig, ax = plt.subplots(1, 2)
-    ax[0].imshow(image)
-    # ax[1].imshow(predicted[0])
-    ax[1].imshow(decoded[0])
+    ax[0, 0].imshow(images[sample])
+    ax[0, 1].imshow(decoded[0])
+
     plt.show()
-
 
 
 # visualize original and decoded
 
-# visualize_samples(decoder, X_test, [100,500,1000,1500])
+# visualize_samples(decoder, decodeds, [100,500,1000])
 
 

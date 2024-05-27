@@ -8,10 +8,11 @@ import gym_donkeycar  # noqa: F401
 import numpy as np
 import pygame
 from pygame.locals import *  # noqa: F403
+from src.utils.config_loader import load_config, CONFIG_PATH
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", help="Path to folder where images will be saved", 
-                    type=str, default="data/human_A")
+                    type=str, default="data/generated_track_human")
 parser.add_argument("-n", "--max-steps", help="Max number of steps", 
                     type=int, default=10000)
 args = parser.parse_args()
@@ -22,7 +23,7 @@ RIGHT = (0, -1)
 DOWN = (-1, 0)
 
 MAX_TURN = 1
-MAX_THROTTLE = 1.
+MAX_THROTTLE = 0.5
 # Smoothing constants
 STEP_THROTTLE = 0.8
 STEP_TURN = 0.8
@@ -78,9 +79,10 @@ pygame.init()
 window = pygame.display.set_mode((400, 400), RESIZABLE)
 
 control_throttle, control_steering = 0, 0
+conf = load_config(CONFIG_PATH)
 
+env = gym.make("donkey-generated-track-v0", conf=conf)
 
-env = gym.make("donkey-generated-roads-v0")
 obs = env.reset()
 for frame_num in range(total_frames):
     x, theta = 0, 0
@@ -91,8 +93,6 @@ for frame_num in range(total_frames):
             x_tmp, th_tmp = moveBindingsGame[keycode]
             x += x_tmp
             theta += th_tmp
-
-
 
     # Smooth control for teleoperation
     control_throttle, control_steering = control(x, theta, control_throttle, control_steering)

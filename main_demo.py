@@ -14,26 +14,30 @@ import tensorflow as tf
 START_ACTION = [0.0,0.0]
 score_history = []
 
+# "exe_path": "/home/o/Applications/DonkeySimLinux/donkey_sim.x86_64",
+
 conf = load_config(CONFIG_PATH)
 
 env = gym.make("donkey-generated-roads-v0", conf=conf)
 
 Reward = ConstantSpeedReward(max_cte=conf["max_cte"], 
-                             target_speed=3, 
-                             sigma=3, action_cost=0.0)
+                             target_speed=1, 
+                             sigma=1, action_cost=0.0)
 
 kinematics = Kinematics()
 
 obs, reward, done, info = env.reset()
 # observation = kinematics(START_ACTION, info)
-observation = kinematics(obs)
+observation = kinematics.reset(obs)
 
-agent = sac.SAC(state_size=observation.shape, action_size=2, hidden_size=512,min_size=100)
+agent = sac.SAC(state_size=observation.shape, 
+                action_size=2, 
+                hidden_size=256,min_size=1000)
 
 for episode in range(5000):
         obs, reward, done, info = env.reset()
-        observation = kinematics(START_ACTION, info)
-
+        observation = kinematics.reset(obs)
+        Reward.reset()
         episode_reward = 0
         episode_len = 0
 
@@ -41,10 +45,9 @@ for episode in range(5000):
                 # action = env.action_space.sample() #! does this work?
                 action = agent.choose_action(observation)
                 new_obs, reward, done, new_info = env.step(np.array(action))
-                new_observation = kinematics(action, new_info)
+                new_observation = kinematics(new_obs, action, new_info)
+                new_info["speed"] = new_info["speed"]*30000
                 # reward = Reward(action, new_info, done)
-                print(done)
-                print(info["cte"])
                 episode_reward += reward
                 episode_len +=1
 
@@ -61,8 +64,6 @@ for episode in range(5000):
                 score_avg=avg_score,
                 episode_len=episode_len)
         
-        print("Memory Count: " , agent.memory.mem_cntr)
-
 env.close()
 
 

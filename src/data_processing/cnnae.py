@@ -57,7 +57,8 @@ class ConvolutionalAutoencoder:
                              epochs=epochs,
                              batch_size=batch_size,
                              shuffle=True,
-                             validation_data=(X_test, X_test))
+                             validation_data=(X_test, X_test),
+                             callbacks=[keras.callbacks.EarlyStopping(patience=15, monitor='val_loss')])
 
     def predict(self, X):
         
@@ -74,7 +75,7 @@ class ConvolutionalAutoencoder:
         self.autoencoder.summary()
 
     
-    def save_encoder(self, model_folder="models/encoder/"):
+    def save_encoder(self, model_folder="models/encoder_tracks/"):
         """
         Saves the encoder model to a json file and the weights to a h5 file
         """
@@ -89,7 +90,7 @@ class ConvolutionalAutoencoder:
             json_file.write(encoder_json)
         encoder.save_weights(weights_file)
 
-    def save_ae(self, model_folder="models/ae/"):
+    def save_ae(self, model_folder="models/ae_tracks/"):
         """
         Saves the decoder model to a json file and the weights to a h5 file
         """

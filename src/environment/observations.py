@@ -85,20 +85,44 @@ class Camera(ObservationType):
     Class for creating a camera observation
     """
 
-    def __init__(self):
+    def __init__(self, num_history=2):
         # LOAD THE AE MODEL
         self.encoder = self.load_ae()
         self.encoder.summary()
+        self.num_history = num_history
+        self.observation_shape = (16,)
+        self.last_observation = None
+        self.last_info = None
         pass
 
-    def __call__(self, image):
+    def reset(self, observation):
+        self.last_observation = observation
+        self.last_observation = self.crop_image(self.last_observation)
+        self.last_observation = self.preprocess_image(self.last_observation)
+        self.last_observation = self.reduction(self.last_observation)
+        self.last_observation = self.last_observation[0]
+        self.last_info = np.array([0.0,0.0,0.0,0.0])
+
+        return self.history(self.last_observation, self.last_info)
+
+    def history(self, encoded, info):
+        return np.concatenate((encoded, self.last_observation, 
+                               info, self.last_info), axis=0)
+    
+    def __call__(self, image, action, info):
         """
         Process the input and creates a new observation
         """
+        info = self.info_edit(info, action)
         image = self.crop_image(image)
         image = self.preprocess_image(image)
         encoded = self.reduction(image)
-        return np.array(encoded[0])
+        history = self.history(encoded[0], info)
+
+        self.last_info = info
+        self.last_observation = encoded[0]
+
+        return history
 
     def crop_image(self, image):
         return image[40:120, :, :]
@@ -128,5 +152,8 @@ class Camera(ObservationType):
 
     def reduction(self, image):
         image= np.expand_dims(image, axis=0)
-        image = self.encoder.predict(image)
+        image = self.encoder.predict(image, verbose=0)
         return image
+    
+    def info_edit(self, info, action):
+        return np.array([info["speed"],info["forward_vel"],action[0], action[1]])
