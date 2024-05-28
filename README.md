@@ -19,7 +19,11 @@ Autonomous driving task in a 3D simulation environment called "*DonkeyCar Sim*" 
 - Autoencoder training with non-stacked images needed.
 - Improvement needed for image preprocessing.
 
-## Examples of learning progress
+## Learning progress visuals
+
+![Screencastfrom2024-05-2723-37-57-ezgif com-optimize](https://github.com/mozturan/AutonomousDrive3D-DRL/assets/89272933/02742e5d-a3e2-44d2-8f63-15b260e77f20)
+
+![dddd](https://github.com/mozturan/AutonomousDrive3D-DRL/assets/89272933/bfb35e5d-256d-4809-bf00-8b144bc39b45)
 
 ![sac-05-1523-29-22-ezgif com-optimize](https://github.com/9Xxi8Q4f/donkeycar_rl/assets/89272933/870cae51-eb4b-424d-b04b-40b21fce3dde)
 ![ddqn-1021-26-46-ezgif com-video-to-gif-converter](https://github.com/9Xxi8Q4f/donkeycar_rl/assets/89272933/e3f12863-7071-43f6-bb33-9cfa0911b00f)
