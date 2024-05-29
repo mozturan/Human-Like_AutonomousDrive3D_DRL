@@ -112,8 +112,11 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=512, temperature=0.001,
-                 gamma=0.99, tau=0.005, buffer_size=int(1e6), min_size=1000, batch_size=256, reward_scale=1.0, model_name = "SAC_DEMO"):
+    def __init__(self, state_size, action_size, alpha=0.0003, 
+                 beta=0.001, hidden_size=512, temperature=0.001,
+                 gamma=0.99, tau=0.005, buffer_size=int(1e6), 
+                 min_size=1000, batch_size=256, reward_scale=1.0, 
+                 model_name = "SAC_DEMO"):
         """
         * Params
         ======
