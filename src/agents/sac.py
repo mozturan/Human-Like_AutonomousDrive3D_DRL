@@ -116,7 +116,7 @@ class SAC:
                  beta=0.001, hidden_size=512, temperature=0.001,
                  gamma=0.99, tau=0.005, buffer_size=int(1e6), 
                  min_size=1000, batch_size=256, reward_scale=1.0, 
-                 model_name = "SAC_DEMO"):
+                 model_name = "SAC_DEMO", max_action = 1.0):
         """
         * Params
         ======
@@ -167,7 +167,7 @@ class SAC:
         self.gamma = gamma
         self.tau = tau
         
-        self.actor = ActorNetwork(max_action=0.5, fc1_dims=hidden_size, fc2_dims=hidden_size,
+        self.actor = ActorNetwork(max_action=max_action, fc1_dims=hidden_size, fc2_dims=hidden_size,
                                   n_actions=action_size, name='actor')
         self.critic_1 = CriticNetwork(n_actions=action_size, fc1_dims=hidden_size,
                                       fc2_dims=hidden_size, name='critic_1')
