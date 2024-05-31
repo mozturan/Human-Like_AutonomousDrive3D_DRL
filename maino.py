@@ -18,7 +18,7 @@ roscoe = Roscoe(state=obs,
              done = done,
              info = info,
              max_cte = conf["max_cte"],
-             sigma = 1.0,
+             sigma = 0.5,
              action_cost = 0.1,
              target_speed = 1.0)
 
@@ -35,6 +35,7 @@ wandb.init(
     # set the wandb project where this run will be logged
 
     project="batch_54",
+    name = "Sigma_0.5",
 
     config={
             "architecture": "AE-MLP",
