@@ -87,7 +87,7 @@ class Roscoe(Wrapper):
                                       axis=0)
 
         self.last_state = state
-        self.lastinfo = info
+        self.last_info = info
 
         return observation, reward
     
@@ -113,3 +113,17 @@ class Roscoe(Wrapper):
     
     def _calculate_speed_reward(self, speed) -> float:
         return math.exp(-(self.target_speed - speed)**2/(2*self.sigma**2))
+
+
+# contiunity wrapper
+class Nasuh(Roscoe):
+
+    def __init__(self, state, action, done, info, 
+                 max_cte, sigma, action_cost,
+                 target_speed):
+        super().__init__(state, action, done, info, 
+                         max_cte, sigma, action_cost,
+                         target_speed)
+    
+    def _calculate_speed_reward(self, speed) -> float:
+        return speed/self.target_speed

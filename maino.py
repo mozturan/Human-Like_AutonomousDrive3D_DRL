@@ -8,6 +8,7 @@ import random
 from src.environment.wrapper import Roscoe
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.agents import sac
+from hp import *
 
 conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-track-v0", conf=conf)
@@ -18,47 +19,51 @@ roscoe = Roscoe(state=obs,
              done = done,
              info = info,
              max_cte = conf["max_cte"],
-             sigma = 0.5,
-             action_cost = 0.1,
-             target_speed = 1.0)
+             sigma = SIGMA,
+             action_cost = ACTION_COST,
+             target_speed = TARGET_SPEED)
 
 obs, reward = roscoe.reset(obs, np.array([0.0, 0.0]), 
                            done, info)
 
 agent = sac.SAC(state_size=obs.shape, 
-                action_size=2, hidden_size=256,
-                min_size=100, batch_size=64,
-                model_name="SAC_Wrapper_Demo",
-                max_action=0.6, temperature=0.1)
+                action_size=ACTION_SIZE, 
+                hidden_size=HIDDEN_SIZE,
+                min_size=MIN_SIZE, 
+                batch_size=BATCH_SIZE,
+                model_name=MODEL_NAME,
+                max_action=MAX_ACTION, 
+                temperature=TEMPERATURE)
 
 wandb.init(
     # set the wandb project where this run will be logged
 
-    project="batch_54",
-    name = "Sigma_0.5",
+    project="Batch Size",
+    name = "Roscoe fixed",
 
     config={
             "architecture": "AE-MLP",
             "dataset": "Generated-Track-v0",
             "epochs": 100,
-            "batch_size": 64,
-            "alpha": 0.0003,
-            "beta": 0.001,
-            "network": 256_256,
-            "min mem size": 100,
-            "max action": 0.6,
-            "temperature": 0.1,
-            "tau": 0.005,
-            "gamma": 0.99,
-            "reward scale": 1.0,
-            "minibatch size": 64,
-            "max_cte": 4.0,
-            "sigma": 1.0,
-            "action_cost": 0.1,
-            "target_speed": 1.0,
-            "noise": False,
-            "env": "donkey-generated-track-v0",
-            "wrapper": "Roscoe*",
+            "batch_size": BATCH_SIZE,
+            "alpha": ALPHA,
+            "beta": BETA,
+            "network": NETWORK,
+            "min mem size": MIN_MEM_SIZE,
+            "max action": MAX_ACTION,
+            "temperature": TEMPERATURE,
+            "tau": TAU,
+            "gamma": GAMMA,
+            "reward scale": REWARD_SCALE,
+            "minibatch size": BATCH_SIZE,
+            "max_cte": conf["max_cte"],
+            "sigma": SIGMA,
+            "action_cost": ACTION_COST,
+            "target_speed": TARGET_SPEED,
+            "noise": NOISE,
+            "env": ENV,
+            "wrapper": WRAPPER,
+            "cte": CTE
     }
 )
 
