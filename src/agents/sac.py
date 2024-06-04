@@ -13,6 +13,7 @@ import tensorflow_probability as tfp
 import sys
 import random as rndm
 import keras
+from src.utils.noise import OrnsteinUhlenbeckActionNoise as noise_OU
 
 tf.random.set_seed(43)
 
@@ -112,8 +113,11 @@ class ActorNetwork(keras.Model):
         return action, log_probs
     
 class SAC:
-    def __init__(self, state_size, action_size, alpha=0.0003, beta=0.001, hidden_size=512, temperature=0.001,
-                 gamma=0.99, tau=0.005, buffer_size=int(1e6), min_size=1000, batch_size=256, reward_scale=1.0, model_name = "SAC_DEMO"):
+    def __init__(self, state_size, action_size, alpha=0.0003, 
+                 beta=0.001, hidden_size=512, temperature=0.001,
+                 gamma=0.99, tau=0.005, buffer_size=int(1e6), 
+                 min_size=1000, batch_size=256, reward_scale=1.0, 
+                 model_name = "SAC_DEMO", max_action = 1.0):
         """
         * Params
         ======
@@ -145,10 +149,10 @@ class SAC:
         """
         self.critic_optimizer = Adam(learning_rate=beta)
 
-
+        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.1) * np.ones(2))
         self.hidden_size = hidden_size
         self.tempereture = temperature
-
+        self.max_action = max_action
         # Noise process
         # self.noise = self.OUNoise(action_size)
         
@@ -164,7 +168,7 @@ class SAC:
         self.gamma = gamma
         self.tau = tau
         
-        self.actor = ActorNetwork(max_action=0.5, fc1_dims=hidden_size, fc2_dims=hidden_size,
+        self.actor = ActorNetwork(max_action=max_action, fc1_dims=hidden_size, fc2_dims=hidden_size,
                                   n_actions=action_size, name='actor')
         self.critic_1 = CriticNetwork(n_actions=action_size, fc1_dims=hidden_size,
                                       fc2_dims=hidden_size, name='critic_1')
@@ -184,14 +188,20 @@ class SAC:
         
         self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/sac/{self.model_name}")
         
-    def choose_action(self, observation):
+    def choose_action(self, observation, evaluate = False):
         """
         Chooses the next action based on the current observation
         """
 
-        #* A noise added in sample_normal function
         state = tf.convert_to_tensor([observation])
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
+
+        #* Add noise to action if not evaluating
+        if not evaluate:
+            noise = self.noise_OU()
+            action = actions[0] + noise
+            action = np.clip(action, -self.max_action, self.max_action)
+            return action
         
         return actions[0]
 
@@ -206,36 +216,37 @@ class SAC:
         Updates the parameters of the critic and actor networks given a mini-batch of experiences
         """
 
+        #* If no tau is provided, use default
         if tau is None:
             tau = self.tau
 
+        #* Get the weights from the target network
         weights = []
         targets = self.target_value.weights
+
+        #* Update the weights of the value network
         for i, weight in enumerate(self.value.weights):
             weights.append(weight * tau + targets[i]*(1-tau))
 
         self.target_value.set_weights(weights)
 
-    def save_model(self):
-        self.actor.save(os.path.join("models", self.model_name+"_actor"))
-        self.value.save(os.path.join("models", self.model_name+"_critic"))
-
-    def load_model(self):
-        self.actor = tf.keras.models.load_model(os.path.join("models", self.model_name+"_actor"))
-        self.value = tf.keras.models.load_model(os.path.join("models", self.model_name+"_critic"))
-
     def train(self):
+
+        #* If not enough samples in the memory, don't train
         if self.memory.mem_cntr < self.min_size:
             return
 
+        #* Sample from memory
         state, action, reward, new_state, done = \
             self.memory.sample_buffer(self.batch_size)
 
+        #* Convert to tensors
         states = tf.convert_to_tensor(state, dtype=tf.float32)
         states_ = tf.convert_to_tensor(new_state, dtype=tf.float32)
         rewards = tf.convert_to_tensor(reward, dtype=tf.float32)
         actions = tf.convert_to_tensor(action, dtype=tf.float32)
 
+        #* Train the value network
         with tf.GradientTape() as tape:
             # target_actions, log_probs = self.actor.sample_normal(states_, reparameterize=False)
             # q1 = self.critic_1(states, target_actions)
@@ -262,10 +273,10 @@ class SAC:
         self.value.optimizer.apply_gradients(zip(value_network_gradients,
                                                 self.value.trainable_variables))
         
+        #* Train the actor
         with tf.GradientTape() as tape:
             #! in the original paper, they reparameterize here! Check for this
             new_policy_actions, log_probs = self.actor.sample_normal(states, reparameterize=True)
-
 
             log_probs = tf.squeeze(log_probs,1)
             q1_new_policy = self.critic_1(states, new_policy_actions)
@@ -282,6 +293,7 @@ class SAC:
         self.actor.optimizer.apply_gradients(zip(actor_network_gradients,
                                                 self.actor.trainable_variables))
         
+        #* Train the critic
         with tf.GradientTape(persistent=True) as tape:
             # I didn't know that these context managers shared values?
             q_hat = self.scale*reward + self.gamma*value_*(1-done)
@@ -301,7 +313,13 @@ class SAC:
             critic_2_network_gradient, self.critic_2.trainable_variables))
         
         self.update_network_parameters()
+
+        #* Delete garbage for better memory management
         gc.collect()
         K.clear_session()
 
         return actor_loss, critic_1_loss
+
+    def save(self, episode, wrapper):
+        self.actor.save(f"models/actor_[{episode}]_{wrapper}.h5")
+

@@ -39,11 +39,14 @@ data_dir = '/home/o/Documents/donkeycar_rl/data/generated_track_human/'
 images, originals = load_data(data_dir)
 
 # X_train, X_test, y_train, y_test = prepare_data(images)
-test_samples = [100, 500, 1000, 1500]
+test_samples = [100, 500,600,800, 1000, 1500]
 decodeds = []
 for sample in test_samples:
     xx= np.expand_dims(images[sample], axis=0)
+    print(time.time())
     predicted = encoder.predict(xx)
+    print(time.time())
+
     decoded = decoder.predict(xx)
     decodeds.append(decoded)
 
