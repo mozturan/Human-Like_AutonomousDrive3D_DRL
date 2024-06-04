@@ -1,0 +1,9 @@
+tensorflow >= 2.15.0
+numpy
+opencv-python
+tensorflow-probability
+sklearn
+matplotlib
+gym
+gym-donkeycar
+wandb
