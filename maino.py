@@ -120,11 +120,6 @@ for episode in range(5000):
         #* Update score history
         score_history.append(episode_reward)
         avg_score = np.mean(score_history)
-
-        # #* Update agent tensorboard
-        # agent.tensorboard.update_stats(episode_reward=episode_reward,
-        #         score_avg=avg_score,
-        #         episode_len=episode_len)
         
         #* Log to wandb
         wandb.log({"episode_length": episode_len, 

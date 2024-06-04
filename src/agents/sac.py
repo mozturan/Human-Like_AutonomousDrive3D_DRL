@@ -186,7 +186,7 @@ class SAC:
 
         self.update_network_parameters(tau=1)
         
-        self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/sac/{self.model_name}")
+        # self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/sac/{self.model_name}")
         
     def choose_action(self, observation, evaluate = False):
         """
