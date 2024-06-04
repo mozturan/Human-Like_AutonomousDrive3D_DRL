@@ -127,7 +127,7 @@ for episode in range(5000):
                    "score_avg": avg_score})
         
         #* Print Evaluation Results
-        if evaluate:
+        if evaluate or episode ==0:
                 print("Evaluation")
                 print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
                 evaluate = False
