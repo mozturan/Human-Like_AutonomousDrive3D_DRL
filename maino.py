@@ -44,7 +44,7 @@ wandb.init(
     # set the wandb project where this run will be logged
 
     project="Batch Size",
-    name = f"{wrapper}",
+    name = "Noise_0.4",
 
     config={
             "architecture": "AE-MLP",
