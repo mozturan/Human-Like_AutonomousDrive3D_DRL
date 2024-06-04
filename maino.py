@@ -85,8 +85,9 @@ for episode in range(5000):
         episode_len = 0
 
         #* Evaluate every 50 episodes
-        if ((episode % 50 == 0) and (episode != 0)):
+        if ((episode % 50 == 0) and (episode != 0)) or episode>=300:
                 evaluate = True
+                print("Evaluating...")
 
         #* Start episode
         while not done and episode_len < 400:
@@ -131,6 +132,6 @@ for episode in range(5000):
                 evaluate = False
 
                 #* save model
-                # agent.save(episode, wrapper)
+                agent.save(episode, wrapper)
     
 env.close()
