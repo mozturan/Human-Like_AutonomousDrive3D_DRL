@@ -1,9 +1,7 @@
 import gym
-import gym_donkeycar
 import numpy as np
-import time
 import wandb
-import random
+import gym_donkeycar
 
 from src.environment.wrapper import Gnod as Wrapper
 from src.utils.config_loader import load_config, CONFIG_PATH
@@ -133,6 +131,6 @@ for episode in range(5000):
                 evaluate = False
 
                 #* save model
-                agent.save(episode, wrapper)
+                # agent.save(episode, wrapper)
     
 env.close()
