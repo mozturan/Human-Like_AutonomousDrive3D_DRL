@@ -5,16 +5,18 @@ import time
 import wandb
 import random
 
-from src.environment.wrapper import Roscoe
+from src.environment.wrapper import Gnod as Wrapper
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.agents import sac
 from hp import *
 
+#* Initialize environment
 conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-track-v0", conf=conf)
 obs, reward, done, info = env.reset()
 
-roscoe = Roscoe(state=obs,
+#* Initialize wrapper
+wrapper = Wrapper(state=obs,
              action = np.array([0.0, 0.0]),
              done = done,
              info = info,
@@ -23,9 +25,11 @@ roscoe = Roscoe(state=obs,
              action_cost = ACTION_COST,
              target_speed = TARGET_SPEED)
 
-obs, reward = roscoe.reset(obs, np.array([0.0, 0.0]), 
+#* Reset the wrapper
+obs, reward, done = wrapper.reset(obs, np.array([0.0, 0.0]), 
                            done, info)
 
+#* Initialize agent
 agent = sac.SAC(state_size=obs.shape, 
                 action_size=ACTION_SIZE, 
                 hidden_size=HIDDEN_SIZE,
@@ -35,11 +39,12 @@ agent = sac.SAC(state_size=obs.shape,
                 max_action=MAX_ACTION, 
                 temperature=TEMPERATURE)
 
+#* Initialize wandb
 wandb.init(
     # set the wandb project where this run will be logged
 
     project="Batch Size",
-    name = "Roscoe fixed",
+    name = f"{wrapper}",
 
     config={
             "architecture": "AE-MLP",
@@ -62,50 +67,77 @@ wandb.init(
             "target_speed": TARGET_SPEED,
             "noise": NOISE,
             "env": ENV,
-            "wrapper": WRAPPER,
-            "cte": CTE
-    }
+            "wrapper": wrapper}
 )
 
+#* Initialize variables
+evaluate = False
 score_history = []
+
+#* Start training
 for episode in range(5000):
+
+        #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
-        obs, reward = roscoe.reset(obs, np.array([0.0, 0.0]), 
+        obs, reward, done = wrapper.reset(obs, np.array([0.0, 0.0]), 
                      done, info)
         
+        #* Reset episode reward
         episode_reward = 0
         episode_len = 0
 
+        #* Evaluate every 50 episodes
+        if ((episode % 50 == 0) and (episode != 0)):
+                evaluate = True
+
+        #* Start episode
         while not done and episode_len < 400:
-                action = agent.choose_action(obs)
+
+                #* Get action from agent and normalize it
+                action = agent.choose_action(obs, evaluate = evaluate)
                 normalized_action = [action[0], (action[1] / 2.0)+0.1]
+
+                #* Step through environment and process the step
                 new_obs, reward, done, new_info = env.step(np.array(normalized_action))
-                new_obs, reward = roscoe.step(new_obs, action, 
+                new_obs, reward, done = wrapper.step(new_obs, action, 
                         done, new_info)
-
-                # print("Speed: ", new_info["speed"])
-                # print("Forward Vel: ", new_info["forward_vel"])
-                # print("CTE: ", new_info["cte"])
-                # print("Reward: ", reward)
-
+                
+                #* Update episode reward
                 episode_reward += reward
                 episode_len +=1
 
+                #* Store step in replay memory
                 agent.remember(obs, action, reward, 
                         new_obs, done)
                 
-                agent.train()
+                #* Train agent
+                if not evaluate:
+                        agent.train()
+
+                #* Update observation
                 obs = new_obs
 
+        #* Update score history
         score_history.append(episode_reward)
         avg_score = np.mean(score_history)
 
-        agent.tensorboard.update_stats(episode_reward=episode_reward,
-                score_avg=avg_score,
-                episode_len=episode_len)
+        # #* Update agent tensorboard
+        # agent.tensorboard.update_stats(episode_reward=episode_reward,
+        #         score_avg=avg_score,
+        #         episode_len=episode_len)
         
+        #* Log to wandb
         wandb.log({"episode_length": episode_len, 
                    "episode_reward": episode_reward, 
                    "score_avg": avg_score})
-                
+        
+        #* Print Evaluation Results
+        if evaluate:
+                print("Evaluation")
+                print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
+                evaluate = False
+
+                #* save model
+                agent.save(episode, wrapper)
+    
 env.close()

@@ -1,5 +1,5 @@
-SIGMA = 0.5
-ACTION_COST = 0.2
+SIGMA = 0.2
+ACTION_COST = 0.4
 TARGET_SPEED = 1.0
 
 ACTION_SIZE = 2
@@ -13,14 +13,12 @@ TEMPERATURE = 0.2
 TAU = 0.005
 GAMMA = 0.99
 
-CTE = "^2"
 
 ALPHA = 0.0003
 BETA = 0.001
 NETWORK = "256_256"
 
 MIN_MEM_SIZE = 100
-NOISE = False
-WRAPPER = "ROSCOE"
+NOISE = True
 
 ENV = "donkey-generated-track-v0"
