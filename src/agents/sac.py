@@ -185,6 +185,9 @@ class SAC:
         self.scale = reward_scale
 
         self.update_network_parameters(tau=1)
+
+        self.actor.build(input_shape=(None,self.state_size[0]))
+        self.actor.summary()
         
         # self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/sac/{self.model_name}")
         

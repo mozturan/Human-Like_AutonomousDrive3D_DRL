@@ -192,6 +192,8 @@ class Gnod(Wrapper):
     # Implement the __str__ method to return the name
     def __str__(self):
         return str(self.get_name())
+
+
 class Horace(Wrapper):
 
     def __init__(self, state, action, done, info, max_cte, sigma, action_cost, target_speed):
