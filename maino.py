@@ -41,8 +41,8 @@ agent = sac.SAC(state_size=obs.shape,
 wandb.init(
     # set the wandb project where this run will be logged
 
-    project="Batch Size",
-    name = "Noise_0.4",
+    project="Wrappers",
+    name = "Gnod_Noisy_0.8",
 
     config={
             "architecture": "AE-MLP",
@@ -71,6 +71,7 @@ wandb.init(
 #* Initialize variables
 evaluate = False
 score_history = []
+max_episode_length = 400
 
 #* Start training
 for episode in range(5000):
@@ -85,12 +86,13 @@ for episode in range(5000):
         episode_len = 0
 
         #* Evaluate every 50 episodes
-        if ((episode % 50 == 0) and (episode != 0)) or episode>=300:
+        if ((episode % 20 == 0) and (episode != 0)) or episode>=200:
                 evaluate = True
+                max_episode_length = 800
                 print("Evaluating...")
 
         #* Start episode
-        while not done and episode_len < 400:
+        while not done and episode_len < max_episode_length:
 
                 #* Get action from agent and normalize it
                 action = agent.choose_action(obs, evaluate = evaluate)
@@ -130,6 +132,7 @@ for episode in range(5000):
                 print("Evaluation")
                 print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
                 evaluate = False
+                max_episode_length = 400
 
                 #* save model
                 agent.save(episode, wrapper)
