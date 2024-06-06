@@ -86,7 +86,7 @@ for episode in range(5000):
         episode_len = 0
 
         #* Evaluate every 50 episodes
-        if ((episode % 20 == 0) and (episode != 0)) or episode>=200:
+        if ((episode % 50 == 0) and (episode != 0)) or episode>=300:
                 evaluate = True
                 max_episode_length = 800
                 print("Evaluating...")
