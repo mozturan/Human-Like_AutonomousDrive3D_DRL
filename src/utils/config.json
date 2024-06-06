@@ -9,5 +9,18 @@
     "racer_name": "test",
     "country": "Middle East",
     "bio": "I am the best racer in the world",
-    "host": "127.0.0.1"
+    "host": "127.0.0.1",
+    "lidar_config": {
+        "deg_per_sweep_inc": 2.0,
+        "deg_ang_down": 0.0,
+        "deg_ang_delta": -1.0,
+        "num_sweeps_levels": 1,
+        "max_range": 30.0,
+        "noise": 0.4,
+        "offset_x": 0.0,
+        "offset_y": 0.5,
+        "offset_z": 0.5,
+        "rot_x": 0.0
+    }
 }
+
