@@ -55,3 +55,27 @@ def visualize_samples(autoencoder, X_test, test_samples):
         ax[i, 1].imshow(pred[0], cmap='gray')
 
     plt.show()
+
+
+def rgb_to_grayscale(images):
+    """
+    Convert color images to grayscale
+    """
+    grayscale_images = []
+    for image in images:
+        grayscale_image = np.dot(image[..., :3], [0.2989, 0.5870, 0.1140])
+        grayscale_images.append(grayscale_image)
+
+    return np.array(grayscale_images)
+
+def blur_images(images, kernel_size=15):
+    """
+    Apply Gaussian blur to images
+    """
+    blurred_images = []
+    for image in images:
+        blurred_image = cv2.GaussianBlur(image, (kernel_size, kernel_size), 0)
+
+        blurred_images.append(blurred_image)
+
+    return np.array(blurred_images)
