@@ -81,10 +81,10 @@ window = pygame.display.set_mode((400, 400), RESIZABLE)
 control_throttle, control_steering = 0, 0
 conf = load_config(CONFIG_PATH)
 
-env = gym.make("donkey-warehouse-v0", conf=conf)
+env = gym.make("donkey-generated-track-v0", conf=conf)
 
 lidar_data = []
-
+t= 0
 obs, reward, done, info = env.reset()
 for frame_num in range(total_frames):
     x, theta = 0, 0
@@ -127,28 +127,22 @@ for frame_num in range(total_frames):
     if render:
         env.render()
 
-    path = os.path.join(output_folder, f"{frame_num}.jpg")
+    path = os.path.join(output_folder, f"{t}_{frame_num}.jpg")
     # Convert to BGR
     # cv2.imwrite(path, obs[:, :, ::-1])
     cv2.imwrite(path, obs)
-
     lidar_data.append(info["lidar"])
-
-    if done:
-        print(done)
-    if info["hit"] != "none":
-        print(info["hit"])
 
     if done:
         obs, reward, done, info = env.reset()
         control_throttle, control_steering = 0, 0
+        #Save Lidar data as numpy
+        np.save(os.path.join(output_folder, f"{t}_lidar_data.npy"), np.array(lidar_data))
 
-
+        t = t+1
+        lidar_data = []
 env.close()
 
-
-#Save Lidar data as numpy
-np.save(os.path.join(output_folder, "lidar_data.npy"), np.array(lidar_data))
 
 
 
