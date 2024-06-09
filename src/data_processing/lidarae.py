@@ -80,9 +80,12 @@ X_train, X_test, y_train, y_test = prepare_data(lidars)
 
 ae = Autoencoder()
 ae.summary()
-ae.train(X_train, X_test, epochs=150, batch_size=16)
+ae.train(X_train, X_test, epochs=1, batch_size=16)
 
-ae.save_encoder()
+# ae.save_encoder()
+lidar = np.expand_dims(X_test[0], axis=0)
+
+print(ae.predict(lidar))
 
 
 
