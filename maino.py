@@ -87,8 +87,8 @@ for episode in range(500):
         #* Reset episode reward
         episode_reward = 0
         episode_len = 0
-        cte_error = 0
-        avg_steering_error = 0
+        # cte_error = 0
+        # avg_steering_error = 0
         #* Evaluate every 50 episodes
         if ((episode % 50 == 0) and (episode != 0)):
                 evaluate = True
@@ -128,7 +128,7 @@ for episode in range(500):
         #* Update score history
         score_history.append(episode_reward)
         avg_score = np.mean(score_history)
-        avg_cte_error = cte_error / episode_len
+        # avg_cte_error = cte_error / episode_len
 
         #* Log to wandb
         wandb.log({"episode_length": episode_len, 

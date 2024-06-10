@@ -149,7 +149,7 @@ class SAC:
         """
         self.critic_optimizer = Adam(learning_rate=beta)
 
-        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.1) * np.ones(2))
+        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.08) * np.ones(2))
         self.hidden_size = hidden_size
         self.tempereture = temperature
         self.max_action = max_action

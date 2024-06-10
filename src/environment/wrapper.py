@@ -340,9 +340,9 @@ class Horace(Wrapper):
         
         reward_cte = self._calculate_cte_reward(info["cte"])
         reward_speed = self._calculate_speed_reward(info["speed"])
-        # reward_action = self._calculate_action_reward(np.array(action))
+        reward_action = self._calculate_action_reward(np.array(action))
 
-        return (reward_cte * reward_speed) #- reward_action
+        return (reward_cte * reward_speed) - reward_action
     
     def get_name(self):
         return self.name
