@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import gym_donkeycar
 
-from src.environment.wrapper import Gnod as Wrapper
+from src.environment.wrapper import Horace as Wrapper
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.agents import sac
 from hp import *
@@ -12,6 +12,7 @@ from hp import *
 conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-track-v0", conf=conf)
 obs, reward, done, info = env.reset()
+start_action = np.array([0.0, 0.0])
 
 #* Initialize wrapper
 wrapper = Wrapper(state=obs,
@@ -24,7 +25,7 @@ wrapper = Wrapper(state=obs,
              target_speed = TARGET_SPEED)
 
 #* Reset the wrapper
-obs, reward, done = wrapper.reset(obs, np.array([0.0, 0.0]), 
+obs, reward, done = wrapper.reset(obs, start_action, 
                            done, info)
 
 #* Initialize agent
@@ -41,8 +42,8 @@ agent = sac.SAC(state_size=obs.shape,
 wandb.init(
     # set the wandb project where this run will be logged
 
-    project="Wrappers",
-    name = "Gnod_Noisy_0.8",
+    project="Wrappers_Lidar",
+    name = "Horace_vBeta",
 
     config={
             "architecture": "AE-MLP",
@@ -72,9 +73,11 @@ wandb.init(
 evaluate = False
 score_history = []
 max_episode_length = 400
-
+best_score = -1000
 #* Start training
-for episode in range(5000):
+for episode in range(500):
+
+        print("Episode :  {}".format(episode))
 
         #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
@@ -84,9 +87,10 @@ for episode in range(5000):
         #* Reset episode reward
         episode_reward = 0
         episode_len = 0
-
+        cte_error = 0
+        avg_steering_error = 0
         #* Evaluate every 50 episodes
-        if ((episode % 50 == 0) and (episode != 0)) or episode>=300:
+        if ((episode % 50 == 0) and (episode != 0)):
                 evaluate = True
                 max_episode_length = 800
                 print("Evaluating...")
@@ -107,6 +111,9 @@ for episode in range(5000):
                 episode_reward += reward
                 episode_len +=1
 
+                
+                #* Update cte_error
+                # cte_error += abs(new_info["cte"])
                 #* Store step in replay memory
                 agent.remember(obs, action, reward, 
                         new_obs, done)
@@ -121,7 +128,8 @@ for episode in range(5000):
         #* Update score history
         score_history.append(episode_reward)
         avg_score = np.mean(score_history)
-        
+        avg_cte_error = cte_error / episode_len
+
         #* Log to wandb
         wandb.log({"episode_length": episode_len, 
                    "episode_reward": episode_reward, 
@@ -129,12 +137,13 @@ for episode in range(5000):
         
         #* Print Evaluation Results
         if evaluate or episode ==0:
-                print("Evaluation")
                 print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
                 evaluate = False
                 max_episode_length = 400
 
-                #* save model
+        #* Save model
+        if episode_reward > best_score or evaluate:
+                best_score = episode_reward
                 agent.save(episode, wrapper)
     
 env.close()

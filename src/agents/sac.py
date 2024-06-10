@@ -324,5 +324,5 @@ class SAC:
         return actor_loss, critic_1_loss
 
     def save(self, episode, wrapper):
-        self.actor.save(f"models/actor_[{episode}]_{wrapper}_new.keras")
+        self.actor.save(f"models/{wrapper}/actor_[{episode}]_{wrapper}.keras")
 

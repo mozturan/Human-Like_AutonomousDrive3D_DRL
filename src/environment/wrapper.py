@@ -202,7 +202,7 @@ class Horace(Wrapper):
         self.encoder = self._ae_load()
         self.lidar_encoder = self._lidarae_load()
 
-        self.lidar_len = len(info["lidar"])
+        self.lidar_len = len(self._lidar(info["lidar"]))
         self.state_len = len(self.encode(state))
         self.info_len = len(self._info_edit(info, action))
         self.max_cte = max_cte
@@ -225,6 +225,9 @@ class Horace(Wrapper):
 
         self.last_lidar = np.zeros((self.lidar_len,),
                                     dtype=np.float32)
+        
+        self.done = False
+        self.cost = 0
 
     def encode(self, state):
 
@@ -280,13 +283,22 @@ class Horace(Wrapper):
 
     def step(self, state, action, done, info):
 
+        lid = info["lidar"].copy()  
+        lid = self._lidar_normalize(lid)
+
+        if lid.min() < 0.1:
+            print("Lidar min punishment: ", lid.min())
+            self.done = True
+        else: self.done = done
+
         #* Calculate reward
-        reward = self._reward(action, info, done)
+        reward = self._reward(action, info, self.done)
 
         #* Encode state
         state = self.encode(state)
-        info = self._info_edit(info, action)
         lidar = self._lidar(info["lidar"])
+
+        info = self._info_edit(info, action)
 
         #* Concatenate state and info
         observation = np.concatenate((state, 
@@ -302,29 +314,23 @@ class Horace(Wrapper):
         self.last_info = info
         self.last_lidar = lidar
 
-        return observation, reward, done
+        return observation, reward, self.done
     def _calculate_action_reward(self, action) -> float:
 
         if self.last_action is not None:
             max_delta = 0.8 - (-0.8)
             cost = np.mean((action- self.last_action)**2
                             / max_delta**2)
-            cost = cost * self.action_cost
+            self.cost = cost * self.action_cost
 
         else:
-            cost = 0.0
+            self.cost = 0.0
 
         self.last_action = action
-        return cost
+        return self.cost
     
     def _reward(self, action, info, done):
 
-        lid = info["lidar"]
-        lid = self._lidar_normalize(lid)
-
-        if lid.min() < 0.125:
-            print("Lidar min punishment: ", lid.min())
-            return -1.0
         if done:
             return -1.0
         if info["cte"] > self.max_cte:
@@ -334,9 +340,9 @@ class Horace(Wrapper):
         
         reward_cte = self._calculate_cte_reward(info["cte"])
         reward_speed = self._calculate_speed_reward(info["speed"])
-        reward_action = self._calculate_action_reward(np.array(action))
+        # reward_action = self._calculate_action_reward(np.array(action))
 
-        return (reward_cte * reward_speed) - reward_action
+        return (reward_cte * reward_speed) #- reward_action
     
     def get_name(self):
         return self.name
@@ -356,7 +362,7 @@ class Horace(Wrapper):
         #* Normalize lidar
         normalized_lidar = lidar.copy()
         normalized_lidar[normalized_lidar < 0] = 20.0
-        normalized_lidars /= 20.0
+        normalized_lidar /= 20.0
 
         return normalized_lidar
     
@@ -379,7 +385,7 @@ class Horace(Wrapper):
         lidar = self._lidar_normalize(lidar)
         lidar = np.expand_dims(lidar, axis=0)
         lidar = self.lidar_encoder.predict(lidar, verbose=0)
-        return lidar
+        return np.reshape(lidar, (16,)) 
 
 
 
