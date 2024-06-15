@@ -12,7 +12,7 @@ from src.utils.config_loader import load_config, CONFIG_PATH
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", help="Path to folder where images will be saved", 
-                    type=str, default="data/generated_track_human")
+                    type=str, default="data/pack/generated_track_human")
 parser.add_argument("-n", "--max-steps", help="Max number of steps", 
                     type=int, default=10000)
 args = parser.parse_args()
@@ -83,7 +83,9 @@ conf = load_config(CONFIG_PATH)
 
 env = gym.make("donkey-generated-track-v0", conf=conf)
 
-obs = env.reset()
+lidar_data = []
+t= 0
+obs, reward, done, info = env.reset()
 for frame_num in range(total_frames):
     x, theta = 0, 0
     # Record pressed keys
@@ -119,18 +121,28 @@ for frame_num in range(total_frames):
     action = np.array([-control_steering, control_throttle])
 
     for _ in range(frame_skip):
-        obs, _, done, _ = env.step(action)
+        obs, reward, done, info = env.step(action)
         if done:
             break
     if render:
         env.render()
 
-    path = os.path.join(output_folder, f"{frame_num}.jpg")
+    path = os.path.join(output_folder, f"{t}_{frame_num}.jpg")
     # Convert to BGR
     # cv2.imwrite(path, obs[:, :, ::-1])
     cv2.imwrite(path, obs)
+    lidar_data.append(info["lidar"])
 
     if done:
-        obs = env.reset()
+        obs, reward, done, info = env.reset()
         control_throttle, control_steering = 0, 0
+        #Save Lidar data as numpy
+        np.save(os.path.join(output_folder, f"{t}_lidar_data.npy"), np.array(lidar_data))
+
+        t = t+1
+        lidar_data = []
+env.close()
+
+
+
 

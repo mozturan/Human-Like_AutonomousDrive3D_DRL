@@ -149,7 +149,7 @@ class SAC:
         """
         self.critic_optimizer = Adam(learning_rate=beta)
 
-        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.1) * np.ones(2))
+        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.08) * np.ones(2))
         self.hidden_size = hidden_size
         self.tempereture = temperature
         self.max_action = max_action
@@ -324,5 +324,5 @@ class SAC:
         return actor_loss, critic_1_loss
 
     def save(self, episode, wrapper):
-        self.actor.save(f"models/actor_[{episode}]_{wrapper}_new.keras")
+        self.actor.save(f"models/{wrapper}/actor_[{episode}]_{wrapper}.keras")
 
