@@ -194,6 +194,9 @@ class Gnod(Wrapper):
         return str(self.get_name())
 
 class Horace(Wrapper):
+    """
+    This is for Lidar and state encoding
+    """
     name = "Horace"
     def __init__(self, state, action, done, info, 
                  max_cte, sigma, action_cost,
