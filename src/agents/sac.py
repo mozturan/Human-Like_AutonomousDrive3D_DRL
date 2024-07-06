@@ -117,7 +117,7 @@ class SAC:
                  beta=0.001, hidden_size=512, temperature=0.001,
                  gamma=0.99, tau=0.005, buffer_size=int(1e6), 
                  min_size=1000, batch_size=256, reward_scale=1.0, 
-                 model_name = "SAC_DEMO", max_action = 1.0):
+                 model_name = "SAC_DEMO", max_action = 1.0, use_noise = True):
         """
         * Params
         ======
@@ -149,7 +149,10 @@ class SAC:
         """
         self.critic_optimizer = Adam(learning_rate=beta)
 
-        self.noise_OU = noise_OU(mean=np.zeros(2), std_deviation=float(0.08) * np.ones(2))
+        self.noise_OU = noise_OU(mean=np.zeros(2), 
+                                     std_deviation=float(0.08) * np.ones(2),
+                                     noise=use_noise)
+
         self.hidden_size = hidden_size
         self.tempereture = temperature
         self.max_action = max_action
