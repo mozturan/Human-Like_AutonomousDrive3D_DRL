@@ -134,7 +134,7 @@ for episode in range(701):
                 obs = new_obs
 
                 #* Update performance
-                performance(cte = new_info["cte"], speed = new_info["speed"])
+                performance(cte = new_info["cte"], speed = new_info["speed"], action = normalized_action)
 
         #* Update score history
         score_history.append(episode_reward)
@@ -142,7 +142,7 @@ for episode in range(701):
         cumilative_reward = np.sum(score_history[-100:])
 
         #* Log to wandb
-        mean_error, cte_avg, speed_avg = performance.get_metrics()
+        mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
 
         wandb.log({"episode_length": episode_len, 
                    "episode_reward": episode_reward, 
@@ -150,7 +150,8 @@ for episode in range(701):
                    "cumilative_avg": cumilative_reward,
                    "mean_error": mean_error,
                    "cte_avg": cte_avg,
-                   "speed_avg": speed_avg
+                   "speed_avg": speed_avg,
+                   "avg_delta": avg_delta
                    })
         
         #* Print Evaluation Results

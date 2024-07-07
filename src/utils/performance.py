@@ -14,8 +14,10 @@ class PerformanceMSE:
         self.mean = 0
         self.ctes = []
         self.speeds = []
+        self.delta = 0
+        self.last_action = None
 
-    def __call__(self, cte, speed):
+    def __call__(self, cte, speed, action):
 
         self.ctes.append(abs(cte))
         self.speeds.append(speed)
@@ -24,6 +26,11 @@ class PerformanceMSE:
         mean_error = (cte_error + speed_error) / 2.0
 
         self.total += mean_error
+
+        if self.last_action is not None:
+            self.delta += np.mean((np.array(action) - self.last_action) ** 2)
+
+        self.last_action = np.array(action)
         self.count += 1
 
     def get_metrics(self):
@@ -38,4 +45,6 @@ class PerformanceMSE:
         # speed_median = np.median(self.speeds)
         # speed_max = np.max(self.speeds)
 
-        return self.mean, cte_avg, speed_avg
+        avg_delta = self.delta / self.count
+
+        return self.mean, cte_avg, speed_avg, avg_delta
