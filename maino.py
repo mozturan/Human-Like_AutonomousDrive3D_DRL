@@ -82,7 +82,7 @@ wandb.init(
 #* Initialize variables
 evaluate = False
 score_history = []
-max_episode_length = 500
+max_episode_length = 300
 best_score = -1000
 
 #* Start training
@@ -98,10 +98,10 @@ for episode in range(701):
         episode_reward = 0
         episode_len = 0
         #* Evaluate every 50 episodes
-        if ((episode % 100 == 0) and (episode != 0)):
-                evaluate = True
-                max_episode_length = 800
-                print("Evaluating...")
+        # if ((episode % 100 == 0) and (episode != 0)):
+        #         evaluate = True
+        #         max_episode_length = 800
+        #         print("Evaluating...")
 
         #* Reset performance
         performance.reset()
@@ -139,7 +139,7 @@ for episode in range(701):
         #* Update score history
         score_history.append(episode_reward)
         avg_score = np.mean(score_history)
-        cumilative_reward = np.sum(score_history[-100:])
+        cumilative_reward = np.mean(score_history[-100:])
 
         #* Log to wandb
         mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
@@ -155,14 +155,16 @@ for episode in range(701):
                    })
         
         #* Print Evaluation Results
-        if evaluate or episode ==0:
-                print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
-                evaluate = False
-                max_episode_length = 500
+        # if evaluate or episode ==0:
+        #         print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
+        #         evaluate = False
+        #         max_episode_length = 500
 
         #* Save model
-        if episode_reward > best_score or evaluate or episode%50 == 0:
-                best_score = episode_reward
-                agent.save(episode, "Vanilla")
+        if cumilative_reward > best_score:
+                best_score = cumilative_reward
+                print("Best Score: ", best_score, "   Episode: ", episode)
+                
+        agent.save(episode, "Vanilla")
     
 env.close()
