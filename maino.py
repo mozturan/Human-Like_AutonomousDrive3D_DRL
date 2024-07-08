@@ -50,7 +50,7 @@ wandb.init(
     # set the wandb project where this run will be logged
 
     project="Generation Alpha",
-    name = "Vanilla",
+    name = "VanillaN",
 
     config={
             "architecture": "AE-MLP",
@@ -165,6 +165,6 @@ for episode in range(701):
                 best_score = cumilative_reward
                 print("Best Score: ", best_score, "   Episode: ", episode)
                 
-        agent.save(episode, "Vanilla")
+        agent.save(episode, "VanillaN")
     
 env.close()
