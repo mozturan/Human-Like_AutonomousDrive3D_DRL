@@ -196,7 +196,6 @@ class Gnod(Wrapper):
 class Faith(Wrapper):
 
     name = "Faith"
-    eta = 0.00001
     def __init__(self, state, action, done, info, max_cte, sigma, action_cost, target_speed):
         super().__init__(state, action, done, info, max_cte, sigma, action_cost, target_speed)
 
@@ -227,7 +226,7 @@ class Faith(Wrapper):
         reward_speed = self._calculate_speed_reward(info["speed"])
         reward_action = self._calculate_action_reward(np.array(action))
 
-        return (reward_cte * reward_speed) / (reward_action + self.eta)
+        return (reward_cte * reward_speed) / (reward_action + 1)
     
     def get_name(self):
         return self.name
