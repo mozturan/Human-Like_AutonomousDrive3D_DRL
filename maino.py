@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import gym_donkeycar
 
-from src.environment.wrapper import Gnod as Wrapper
+from src.environment.wrapper import Faith as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.utils.performance import PerformanceMSE as Performance
@@ -50,7 +50,7 @@ wandb.init(
     # set the wandb project where this run will be logged
 
     project="Generation Alpha",
-    name = "VanillaN-G",
+    name = "VanillaN-F",
 
     config={
             "architecture": "AE-MLP",
@@ -165,6 +165,6 @@ for episode in range(701):
                 best_score = cumilative_reward
                 print("Best Score: ", best_score, "   Episode: ", episode)
                 
-        agent.save(episode, "VanillaN-G")
+        agent.save(episode, "VanillaN-F")
     
 env.close()
