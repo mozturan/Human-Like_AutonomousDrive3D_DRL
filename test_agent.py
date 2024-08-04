@@ -8,7 +8,7 @@ import keras
 import tensorflow as tf
 
 from src.utils.config_loader import load_config, CONFIG_PATH
-from src.environment.wrapper import Faith as Wrapper
+from src.environment.wrapper import Roscoe as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.performance import PerformanceMSE as Performance
 
