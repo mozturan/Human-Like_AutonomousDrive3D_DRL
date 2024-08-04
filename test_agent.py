@@ -12,7 +12,7 @@ from src.environment.wrapper import Roscoe as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.performance import PerformanceMSE as Performance
 
-model_string= "models/Vanilla/actor_[200]_Vanilla.keras"
+model_string= "models/VanillaN-F-S/actor_[290]_VanillaN-F-S.keras"
 
 #* Load model
 model = keras.saving.load_model(model_string, 
@@ -51,38 +51,38 @@ obs, reward, done = wrapper.reset(obs, start_action,
                            done, info)
 
 #* Initialize wandb
-wandb.init(
-    # set the wandb project where this run will be logged
+# wandb.init(
+#     # set the wandb project where this run will be logged
 
-    project="Alpha Tests",
-    name = "VanillaN-F-S",
+#     project="Alpha Tests",
+#     name = "VanillaN-F-S",
 
-    config={
-            "architecture": "AE-MLP",
-            "dataset": "Generated-Track-v0",
-            "epochs": 100,
-            "batch_size": BATCH_SIZE,
-            "alpha": ALPHA,
-            "beta": BETA,
-            "network": NETWORK,
-            "min mem size": MIN_MEM_SIZE,
-            "max action": MAX_ACTION,
-            "temperature": TEMPERATURE,
-            "tau": TAU,
-            "gamma": GAMMA,
-            "hidden size": HIDDEN_SIZE,
-            "reward scale": REWARD_SCALE,
-            "minibatch size": BATCH_SIZE,
-            "max_cte": conf["max_cte"],
-            "sigma": SIGMA,
-            "action_cost": ACTION_COST,
-            "target_speed": TARGET_SPEED,
-            "use noise": USE_NOISE,
-            "use smoothing": USE_SMOOTHING,
-            "noise": NOISE,
-            "env": ENV,
-            "wrapper": wrapper}
-)
+#     config={
+#             "architecture": "AE-MLP",
+#             "dataset": "Generated-Track-v0",
+#             "epochs": 100,
+#             "batch_size": BATCH_SIZE,
+#             "alpha": ALPHA,
+#             "beta": BETA,
+#             "network": NETWORK,
+#             "min mem size": MIN_MEM_SIZE,
+#             "max action": MAX_ACTION,
+#             "temperature": TEMPERATURE,
+#             "tau": TAU,
+#             "gamma": GAMMA,
+#             "hidden size": HIDDEN_SIZE,
+#             "reward scale": REWARD_SCALE,
+#             "minibatch size": BATCH_SIZE,
+#             "max_cte": conf["max_cte"],
+#             "sigma": SIGMA,
+#             "action_cost": ACTION_COST,
+#             "target_speed": TARGET_SPEED,
+#             "use noise": USE_NOISE,
+#             "use smoothing": USE_SMOOTHING,
+#             "noise": NOISE,
+#             "env": ENV,
+#             "wrapper": wrapper}
+# )
 
 score_history = []
 max_episode_length = 1000
@@ -109,7 +109,9 @@ for episode in range(50):
                 normalized_action = action_wrapper.step(action, smooth = USE_SMOOTHING)
 
                 #* Step through environment and process the step
+
                 new_obs, reward, done, new_info = env.step(np.array(normalized_action))
+                
                 new_obs, reward, done = wrapper.step(new_obs, action, 
                         done, new_info)
                 
@@ -129,14 +131,14 @@ for episode in range(50):
         #* Log to wandb
         mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
 
-        wandb.log({"episode_length": episode_len, 
-                   "episode_reward": episode_reward, 
-                   "score_avg": avg_score,
-                   "mean_error": mean_error,
-                   "cte_avg": cte_avg,
-                   "speed_avg": speed_avg,
-                   "avg_delta": avg_delta
-                   })
+        # wandb.log({"episode_length": episode_len, 
+        #            "episode_reward": episode_reward, 
+        #            "score_avg": avg_score,
+        #            "mean_error": mean_error,
+        #            "cte_avg": cte_avg,
+        #            "speed_avg": speed_avg,
+        #            "avg_delta": avg_delta
+        #            })
         
 env.close()
 
