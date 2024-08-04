@@ -12,7 +12,7 @@ from src.environment.wrapper import Faith as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.performance import PerformanceMSE as Performance
 
-model_string= "models/Horace/actor_[450]_Horace.keras"
+model_string= "models/Vanilla/actor_[200]_Vanilla.keras"
 
 #* Load model
 model = keras.saving.load_model(model_string, 
@@ -122,4 +122,22 @@ for episode in range(50):
 
                 #* Update performance
                 performance(cte = new_info["cte"], speed = new_info["speed"], action = normalized_action)
+
+        score_history.append(episode_reward)
+        avg_score = np.mean(score_history)
+
+        #* Log to wandb
+        mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
+
+        wandb.log({"episode_length": episode_len, 
+                   "episode_reward": episode_reward, 
+                   "score_avg": avg_score,
+                   "mean_error": mean_error,
+                   "cte_avg": cte_avg,
+                   "speed_avg": speed_avg,
+                   "avg_delta": avg_delta
+                   })
+        
+env.close()
+
 
