@@ -154,6 +154,6 @@ for episode in range(701):
                 best_score = cumilative_reward
                 print("Best Score: ", best_score, "   Episode: ", episode)
                 
-        # agent.save(episode, "Nothing")
+        agent.save(episode, "Nothing")
     
 env.close()

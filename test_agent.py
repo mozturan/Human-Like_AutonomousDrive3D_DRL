@@ -12,7 +12,7 @@ from src.environment.wrapper import Roscoe as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.performance import PerformanceMSE as Performance
 
-model_string= "models/Generation_0/Chaos/actor_[220]_Chaos.keras"
+model_string= "models/Generation_0/Nothing/actor_[333]_Nothing.keras"
 
 #* Load model
 model = keras.saving.load_model(model_string, 
