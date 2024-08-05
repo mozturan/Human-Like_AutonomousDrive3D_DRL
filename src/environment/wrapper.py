@@ -152,6 +152,7 @@ class Chaos(Wrapper):
             cost = 0.0
 
         self.last_action = action
+        # print(self.last_action)
         return cost
 
     def get_name(self):
@@ -167,6 +168,28 @@ class Chaos(Wrapper):
     def _calculate_speed_reward(self, speed) -> float:
         return (1.0 - (abs(speed - 1.0)/1.0)**2)
 
+class Nothing(Chaos):
+
+    name = "Nothing"
+    def __init__(self, state, action, done, info, max_cte, sigma, action_cost, target_speed):
+        super().__init__(state, action, done, info, max_cte, sigma, action_cost, target_speed)
+
+    def _reward(self, action, info, done):
+
+        if done:
+            return -1.0
+        if info["cte"] > self.max_cte:
+            return -1.0
+        if info["forward_vel"] < 0:
+            return -1.0
+        
+        reward_cte = self._calculate_cte_reward(info["cte"])
+        reward_speed = self._calculate_speed_reward(info["speed"])
+        reward_action = self._calculate_action_reward(np.array(action))
+
+        return (reward_cte * reward_speed) / (reward_action + 1)
+
+     
 class Roscoe(Wrapper):
 
     name = "Roscoe"
