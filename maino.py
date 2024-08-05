@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import gym_donkeycar
 
-from src.environment.wrapper import Faith as Wrapper
+from src.environment.wrapper import Chaos as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.utils.performance import PerformanceMSE as Performance
@@ -49,8 +49,8 @@ agent = sac.SAC(state_size=obs.shape,
 wandb.init(
     # set the wandb project where this run will be logged
 
-    project="Generation Alpha",
-    name = "VanillaN-F-S",
+    project="Generation 0",
+    name = "Chaos",
 
     config={
             "architecture": "AE-MLP",
@@ -82,7 +82,7 @@ wandb.init(
 #* Initialize variables
 evaluate = False
 score_history = []
-max_episode_length = 300
+max_episode_length = 500
 best_score = -1000
 
 #* Start training
@@ -97,11 +97,6 @@ for episode in range(701):
         #* Reset episode reward
         episode_reward = 0
         episode_len = 0
-        #* Evaluate every 50 episodes
-        # if ((episode % 100 == 0) and (episode != 0)):
-        #         evaluate = True
-        #         max_episode_length = 800
-        #         print("Evaluating...")
 
         #* Reset performance
         performance.reset()
@@ -154,17 +149,11 @@ for episode in range(701):
                    "avg_delta": avg_delta
                    })
         
-        #* Print Evaluation Results
-        # if evaluate or episode ==0:
-        #         print("Episode {} Reward {} Episode Length {}".format(episode, episode_reward, episode_len))
-        #         evaluate = False
-        #         max_episode_length = 500
-
         #* Save model
         if cumilative_reward > best_score:
                 best_score = cumilative_reward
                 print("Best Score: ", best_score, "   Episode: ", episode)
                 
-        agent.save(episode, "VanillaN-F-S")
+        agent.save(episode, "Chaos")
     
 env.close()

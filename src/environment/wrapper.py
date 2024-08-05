@@ -120,6 +120,53 @@ class Wrapper(ABC):
     def get_name(self):
         pass
 
+class Chaos(Wrapper):
+
+    name = "Chaos"
+    def __init__(self, state, action, done, info, max_cte, sigma, action_cost, target_speed):
+        super().__init__(state, action, done, info, max_cte, sigma, action_cost, target_speed)
+    
+    def _reward(self, action, info, done):
+
+        if done:
+            return -1.0
+        if info["cte"] > self.max_cte:
+            return -1.0
+        if info["forward_vel"] < 0:
+            return -1.0
+        
+        reward_cte = self._calculate_cte_reward(info["cte"])
+        reward_speed = self._calculate_speed_reward(info["speed"])
+        reward_action = self._calculate_action_reward(np.array(action))
+
+        return (reward_cte * reward_speed) - reward_action
+    
+    def _calculate_action_reward(self, action) -> float:
+        if self.last_action is not None:
+            max_delta = 0.8 - (-0.8)
+            cost = np.mean((action- self.last_action)**2
+                            / max_delta**2)
+            cost = cost * self.action_cost
+
+        else:
+            cost = 0.0
+
+        self.last_action = action
+        return cost
+
+    def get_name(self):
+        return self.name
+
+    # Implement the __str__ method to return the name
+    def __str__(self):
+        return str(self.get_name())
+    
+    def _calculate_cte_reward(self, cte) -> float:
+        return (1.0 - (abs(cte)/self.max_cte)**2)**0.5
+
+    def _calculate_speed_reward(self, speed) -> float:
+        return (1.0 - (abs(speed - 1.0)/1.0)**2)
+
 class Roscoe(Wrapper):
 
     name = "Roscoe"
