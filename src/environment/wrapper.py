@@ -166,7 +166,7 @@ class Chaos(Wrapper):
         return (1.0 - (abs(cte)/self.max_cte)**2)**0.5
 
     def _calculate_speed_reward(self, speed) -> float:
-        return (1.0 - (abs(speed - 1.0)/1.0)**2)
+        return math.exp(-(self.target_speed - speed)**2/(2*self.sigma**2))
 
 class Nothing(Chaos):
 
