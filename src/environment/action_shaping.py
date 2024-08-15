@@ -6,17 +6,26 @@ class ActionWrapper(ABC):
 
     @abstractmethod
     def __init__(self) -> None:
-        super().__init__()
+        pass
 
     @abstractmethod
+    def step(self, action):
+        pass
+
+    @abstractmethod
+    def get_name(self):
+        pass
+
+class ActionClipping(ActionWrapper):
+    def __init__(self):
+        pass
     def step(self, action):
         smoothed_action = [action[0], (action[1] / 2.0)+0.1]
 
         return smoothed_action
-    
-    @abstractmethod
+
     def get_name(self):
-        pass
+        return "ActionClipping"
 
 class LowPassFilter(ActionWrapper):
     def __init__(self, smoothing_coef = 0.3):
@@ -35,6 +44,9 @@ class LowPassFilter(ActionWrapper):
             self.smoothed_action * self.smoothing_coef + action * (1 - self.smoothing_coef)        
         
         return self.smoothed_action
+    
+    def get_name(self):
+        return "LowPassFilter"
 
 class MovingAverage(ActionWrapper):
 
@@ -53,6 +65,9 @@ class MovingAverage(ActionWrapper):
             self.window.pop(0)
 
         return np.mean(self.window, axis=0)
+    
+    def get_name(self):
+        return "MovingAverage"
     
 class WeightedMovingAverage(ActionWrapper):
 
@@ -77,6 +92,9 @@ class WeightedMovingAverage(ActionWrapper):
 
         return np.average(self.window, axis=0, weights=self.weights)
     
+    def get_name(self):
+        return "WeightedMovingAverage"
+    
 class InertiaTH(ActionWrapper):
 
     def __init__(self, threshold = 0.1):
@@ -99,4 +117,7 @@ class InertiaTH(ActionWrapper):
         else:
             self.last_action = action
             return action
+        
+    def get_name(self):
+        return "InertiaTH"
         

@@ -40,10 +40,13 @@ agent = sac.SAC(state_size=obs.shape,
                 hidden_size=HIDDEN_SIZE,
                 min_size=MIN_SIZE, 
                 batch_size=BATCH_SIZE,
-                model_name=MODEL_NAME,
                 max_action=MAX_ACTION, 
                 temperature=TEMPERATURE,
-                use_noise=USE_NOISE)
+                use_noise=USE_NOISE,
+                tau=TAU,
+                gamma=GAMMA,
+                alpha=ALPHA,
+                beta=BETA)
 
 #* Initialize wandb
 wandb.init(
@@ -60,7 +63,7 @@ wandb.init(
             "alpha": ALPHA,
             "beta": BETA,
             "network": NETWORK,
-            "min mem size": MIN_MEM_SIZE,
+            "min mem size": MIN_SIZE,
             "max action": MAX_ACTION,
             "temperature": TEMPERATURE,
             "tau": TAU,
@@ -74,7 +77,6 @@ wandb.init(
             "target_speed": TARGET_SPEED,
             "use noise": USE_NOISE,
             "use smoothing": USE_SMOOTHING,
-            "noise": NOISE,
             "env": ENV,
             "wrapper": wrapper}
 )
