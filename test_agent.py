@@ -8,11 +8,11 @@ import keras
 import tensorflow as tf
 
 from src.utils.config_loader import load_config, CONFIG_PATH
-from src.environment.wrapper import Roscoe as Wrapper
+from src.environment.wrapper import Nothing as Wrapper
 from src.environment.action_shaping import SmoothingAction
 from src.utils.performance import PerformanceMSE as Performance
 
-model_string= "models/Generation_0/Nothing/actor_[287]_Nothing.keras"
+model_string= "models/Generation_0/NothingX/actor_[254]_NothingX.keras"
 
 #* Load model
 model = keras.saving.load_model(model_string, 
