@@ -4,7 +4,7 @@
     },
 
     "Agent": {
-        "name": "SAC",
+        "name": "sac",
         "ACTION_SIZE": 2,
         "HIDDEN_SIZE": 512,
         "MIN_SIZE": 100,
@@ -17,13 +17,15 @@
     },
 
     "env_wrapper": {
+        "name": "Nothing",
         "SIGMA": 0.2,
         "ACTION_COST": 0.5,
         "TARGET_SPEED": 1.0
     },    
 
     "action_wrapper": {
-        "name": "ActionClipping"
+        "name": "ActionClipping",
+        "parameters": {}
     }
     
 }

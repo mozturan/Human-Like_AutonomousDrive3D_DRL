@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-def load_hp_config(config_path: str) -> dict:
+def load_hp_config(config_path: str = "/home/o/Documents/donkeycar_rl/hyperparams/hp_config.json") -> dict:
     """
     Load configuration from a JSON file.
 
