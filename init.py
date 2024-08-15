@@ -67,8 +67,9 @@ agent = Agent.SAC(state_size=obs.shape,
                 tau=hp_config["Agent"]["TAU"],
                 gamma=hp_config["Agent"]["GAMMA"],
                 use_noise=hp_config["Agent"]["USE_NOISE"],
-                alpha = hp_config["Agent"]["ALPHA"],
-                beta = hp_config["Agent"]["BETA"])
+                # alpha = hp_config["Agent"]["ALPHA"],
+                # beta = hp_config["Agent"]["BETA"])
+                )
 
 #* Initialize wandb
 wandb.init(

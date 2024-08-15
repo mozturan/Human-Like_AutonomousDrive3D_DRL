@@ -19,6 +19,10 @@ class ActionWrapper(ABC):
 class ActionClipping(ActionWrapper):
     def __init__(self):
         pass
+
+    def reset(self):
+        pass
+    
     def step(self, action):
         smoothed_action = [action[0], (action[1] / 2.0)+0.1]
 
