@@ -19,10 +19,9 @@ action_wrapper = getattr(action_wrapper_module, action_wrapper_name)
 
 #* Agent import
 agent_name = hp_config["Agent"]["name"]
-agent_module = "src.agents"
+agent_module = f"src.agents.{agent_name}"
 
-agent_module = importlib.import_module(agent_module)
-Agent = getattr(agent_module, agent_name)
+Agent = importlib.import_module(agent_module)
 
 import gym
 import numpy as np
@@ -58,3 +57,29 @@ obs, reward, done = wrapper.reset(obs, start_action,
                            done, info)
 
 #* Initialize agent
+agent = Agent.SAC(state_size=obs.shape, 
+                action_size=hp_config["Agent"]["ACTION_SIZE"],
+                hidden_size=hp_config["Agent"]["HIDDEN_SIZE"],
+                min_size=hp_config["Agent"]["MIN_SIZE"],
+                batch_size=hp_config["Agent"]["BATCH_SIZE"],
+                max_action=hp_config["Agent"]["MAX_ACTION"],
+                temperature=hp_config["Agent"]["TEMPERATURE"],
+                tau=hp_config["Agent"]["TAU"],
+                gamma=hp_config["Agent"]["GAMMA"],
+                use_noise=hp_config["Agent"]["USE_NOISE"],
+                alpha = hp_config["Agent"]["ALPHA"],
+                beta = hp_config["Agent"]["BETA"])
+
+#* Initialize wandb
+wandb.init(
+    project="43.0.0",
+    name = f"xxx",
+
+    config= hp_config)
+
+#* Initialize variables
+evaluate = False
+score_history = []
+max_episode_length = 500
+best_score = -1000
+
