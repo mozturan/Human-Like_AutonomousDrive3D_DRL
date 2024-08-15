@@ -10,7 +10,9 @@ class ActionWrapper(ABC):
 
     @abstractmethod
     def step(self, action):
-        pass
+        smoothed_action = [action[0], (action[1] / 2.0)+0.1]
+
+        return smoothed_action
     
     @abstractmethod
     def get_name(self):
@@ -25,17 +27,14 @@ class LowPassFilter(ActionWrapper):
     def reset(self):
         self.smoothed_action = None
 
-    def step(self, action, smooth=True):
+    def step(self, action):
 
-        if smooth:
-            if self.smoothed_action is None:
+        if self.smoothed_action is None:
                 self.smoothed_action = np.zeros_like(action)
-            self.smoothed_action = self.smoothed_action * self.smoothing_coef + action * (1 - self.smoothing_coef)
-        else:
-            self.smoothed_action = [action[0], (action[1] / 2.0)+0.1]
+        self.smoothed_action = \
+            self.smoothed_action * self.smoothing_coef + action * (1 - self.smoothing_coef)        
         
         return self.smoothed_action
-
 
 class MovingAverage(ActionWrapper):
 
@@ -55,7 +54,6 @@ class MovingAverage(ActionWrapper):
 
         return np.mean(self.window, axis=0)
     
-
 class WeightedMovingAverage(ActionWrapper):
 
     def __init__(self, window_size = 5):
@@ -76,3 +74,26 @@ class WeightedMovingAverage(ActionWrapper):
 
         return np.average(self.window, axis=0, weights=self.weights)
     
+class InertiaTH(ActionWrapper):
+
+    def __init__(self, threshold = 0.1):
+        self.threshold = threshold
+        self.last_action = None
+        self.last_action_index = None
+
+    def reset(self):
+        self.last_action = None
+        self.last_action_index = None
+
+    def step(self, action):
+
+        if self.last_action is not None:
+            if np.abs(action - self.last_action) > self.threshold:
+                self.last_action = action
+                return action
+            else:
+                return self.last_action
+        else:
+            self.last_action = action
+            return action
+        
