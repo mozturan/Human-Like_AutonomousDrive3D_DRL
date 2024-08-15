@@ -3,6 +3,8 @@
         "name": "donkey-generated-track-v0"
     },
 
+    "Model" : "Vanilla",
+
     "Agent": {
         "name": "sac",
         "ACTION_SIZE": 2,
@@ -13,7 +15,7 @@
         "TEMPERATURE": 0.2,
         "TAU": 0.005,
         "GAMMA": 0.99,
-        "USE_NOISE": true
+        "USE_NOISE": false
     },
 
     "env_wrapper": {

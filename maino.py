@@ -1,7 +1,21 @@
 from init import *
 
+hp_config_path = None
+hp_config = config_init(hp_config_path)
+Model = hp_config["Model"]
+save_path = f"models/v43/{Model}/"
+
+if hp_config_path is None:
+        env, wrapper, action_wrapper, agent, performance = train_init(hp_config)
+else:
+        #! This project gets bigger each day, help me
+        env, wrapper, action_wrapper = test_init()
+
+agent.save(-1, save_path)
+save_hp_config(hp_config, f"{save_path}/hp_config.json")
+
 #* Start training
-for episode in range(701):
+for episode in range(1000):
 
         action_wrapper.reset()
         #* Reset environment and the wrapper
@@ -69,6 +83,6 @@ for episode in range(701):
                 best_score = cumilative_reward
                 print("Best Score: ", best_score, "   Episode: ", episode)
                 
-        # agent.save(episode, "NothingX")
+        agent.save(episode, save_path)
     
 env.close()

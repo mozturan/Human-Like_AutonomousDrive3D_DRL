@@ -326,6 +326,10 @@ class SAC:
 
         return actor_loss, critic_1_loss
 
-    def save(self, episode, wrapper):
-        self.actor.save(f"models/Generation_0/{wrapper}/actor_[{episode}]_{wrapper}.keras")
+    def save(self, episode, path):
 
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        self.actor.save(f"{path}/_{episode}.keras")
+        
