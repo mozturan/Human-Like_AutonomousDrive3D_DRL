@@ -4,7 +4,7 @@ import wandb
 import gym_donkeycar
 
 from src.environment.wrapper import Nothing as Wrapper
-from src.environment.action_shaping import SmoothingAction
+from src.environment.action_shaping import LowPassFilter as action_wrapping
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.utils.performance import PerformanceMSE as Performance
 from src.agents import sac
@@ -15,7 +15,7 @@ conf = load_config(CONFIG_PATH)
 env = gym.make("donkey-generated-track-v0", conf=conf)
 obs, reward, done, info = env.reset()
 start_action = np.array([0.0, 0.0])
-action_wrapper = SmoothingAction(smoothing_coef = 0.5)
+action_wrapper = action_wrapping(smoothing_coef = 0.5)
 
 #* Initialize wrapper
 wrapper = Wrapper(state=obs,
@@ -106,7 +106,7 @@ for episode in range(701):
 
                 #* Get action from agent and normalize it
                 action = agent.choose_action(obs, evaluate = evaluate)
-                normalized_action = action_wrapper.step(action, smooth = USE_SMOOTHING)
+                normalized_action = action_wrapper.step(action)
 
                 #* Step through environment and process the step
                 new_obs, reward, done, new_info = env.step(np.array(normalized_action))

@@ -56,11 +56,14 @@ class MovingAverage(ActionWrapper):
     
 class WeightedMovingAverage(ActionWrapper):
 
-    def __init__(self, window_size = 5):
+    def __init__(self, window_size = 5, weights = None):
         self.window_size = window_size
         self.window = []
 
-        self.weights = [i for i in range(1, window_size+1)]
+        if weights is None:
+            self.weights = [i for i in range(1, window_size+1)]
+        else:
+            self.weights = weights
 
     def reset(self):
         self.window = []
