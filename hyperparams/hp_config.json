@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "Noisy-LowPassFilter",
+    "Model" : "Noisy-WeightedMovingAverage",
 
     "Agent": {
         "name": "sac",
@@ -26,8 +26,8 @@
     },    
 
     "action_wrapper": {
-        "name": "LowPassFilter",
-        "parameters": {"smoothing_coef": 0.3}
+        "name": "WeightedMovingAverage",
+        "parameters": {"window_size": 5}
     }
     
 }
