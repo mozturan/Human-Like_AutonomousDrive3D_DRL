@@ -2,11 +2,12 @@ from init import *
 import keras
 import tensorflow as tf
 
-hp_config_path = "models/v43/Vanilla/hp_config.json"
-model_string= "models/v43/Vanilla/_135.keras"
+hp_config_path = "models/v43/Noisy-WeightedMovingAverage/hp_config.json"
+model_string= "models/v43/Noisy-WeightedMovingAverage/_247.keras"
 
 hp_config = config_init(hp_config_path)
 Model = hp_config["Model"]
+print(Model)
 env, wrapper, action_wrapper = test_init(hp_config)
 
 #* Load model
