@@ -81,6 +81,7 @@ class WeightedMovingAverage(ActionWrapper):
 
         if weights is None:
             self.weights = [i for i in range(1, window_size+1)]
+            # self.weights = np.array(self.weights)
         else:
             self.weights = weights
 
@@ -94,6 +95,10 @@ class WeightedMovingAverage(ActionWrapper):
         if len(self.window) > self.window_size:
             self.window.pop(0)
 
+        if len(self.window) < self.window_size:
+            return action
+
+        # print("WMA: ", np.average(self.window, axis=0, weights=self.weights))
         return np.average(self.window, axis=0, weights=self.weights)
     
     def get_name(self):
