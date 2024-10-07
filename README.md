@@ -8,9 +8,9 @@ Some detailed information about the study is given below. The study is in the de
 
 Video to observe performances: [Video](https://www.youtube.com/watch?v=UJ_SdjIPPi8) 
 ____________________________________________
-Autoencoder Results | System Architecture For Training
-:-------------------------:|:-------------------------:
-![Slide3](https://github.com/user-attachments/assets/1e133cd9-41da-43e5-a480-5fbcb7ebcde8) | ![Screenshot from 2024-10-07 12-44-58](https://github.com/user-attachments/assets/25889082-82de-4fc2-b3d4-198d7fdeee37)
+ | System Architecture For Training
+ |:-------------------------:
+ | ![Screenshot from 2024-10-07 12-44-58](https://github.com/user-attachments/assets/25889082-82de-4fc2-b3d4-198d7fdeee37)
 
 Model Type | Description
 :-------------------------:|:-------------------------:
