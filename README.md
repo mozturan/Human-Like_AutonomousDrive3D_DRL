@@ -1,4 +1,4 @@
-# Autonomous Driving W/ Deep Reinforcement Learning **(Ongoing Project)**
+# Human-Like Autonomous Driving W/ Deep Reinforcement Learning
 
 The objective is to develop human-like driving behaviors in autonomous vehicles using a hierarchical deep reinforcement learning (DRL) framework. Visual feature extraction and dimensionality reduction from RGB camera images are conducted using an autoencoder, which allows the agent to analyze the driving environment more effectively. Soft Actor-Critic (SAC) algorithm is selected as the DRL method for decision-making and control in autonomous driving; additionally, action noise is incorporated to facilitate a more efficient learning process. Action filtering techniques, such as Exponential Moving Average (EMA) and Weighted Moving Average (WMA), are employed to smooth the movements of the steering and throttle, thereby enhancing driving fluidity.
 
