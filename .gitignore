@@ -11,3 +11,4 @@ gym-donkeycar
 *.jpg
 __pycache__
 wandb/
+.txt
