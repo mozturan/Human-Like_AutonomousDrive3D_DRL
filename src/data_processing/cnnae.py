@@ -52,7 +52,7 @@ class ConvolutionalAutoencoder:
         # self.encoder = keras.Model(input_img, encode_linear)
         return autoencoder    
     
-    def train(self, X_train, X_test, epochs=100, batch_size=64):
+    def train(self, X_train, X_test, epochs=10, batch_size=64):
         self.autoencoder.fit(X_train, X_train,
                              epochs=epochs,
                              batch_size=batch_size,

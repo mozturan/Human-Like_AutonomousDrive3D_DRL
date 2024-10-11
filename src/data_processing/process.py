@@ -51,6 +51,13 @@ def visualize_samples(autoencoder, X_test, test_samples):
         img = X_test[sample]
         pred = preds[i]
 
+        plt.imshow(img)
+        plt.show()
+
+        plt.imshow(pred[0])
+        plt.show()
+
+
         ax[i, 0].imshow(img, cmap='gray')
         ax[i, 1].imshow(pred[0], cmap='gray')
 

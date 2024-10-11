@@ -42,7 +42,6 @@ def train_init(hp_config):
 
     Agent = importlib.import_module(agent_module)
 
-
     #* Initialize environment
     conf = load_config(CONFIG_PATH)
     env = gym.make("donkey-generated-track-v0", conf=conf)
@@ -128,9 +127,12 @@ def test_init(hp_config):
         action_cost = hp_config["env_wrapper"]["ACTION_COST"],
         target_speed = hp_config["env_wrapper"]["TARGET_SPEED"])
 
+    #* Initialize performanse
+    performance = Performance(ref_speed=hp_config["env_wrapper"]["TARGET_SPEED"])
+
     #* Reset the wrapper
     obs, reward, done = wrapper.reset(obs, start_action, 
                             done, info)
 
 
-    return env, wrapper, action_wrapper
+    return env, wrapper, action_wrapper, performance
