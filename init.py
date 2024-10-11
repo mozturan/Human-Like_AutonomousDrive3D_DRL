@@ -6,7 +6,7 @@ import wandb
 import gym_donkeycar
 from src.utils.config_loader import load_config, CONFIG_PATH
 from src.utils.performance import PerformanceMSE as Performance
-
+ 
 #* Initialize variables
 evaluate = False
 score_history = []

@@ -2,7 +2,7 @@ import logging
 import os
 import json
 
-CONFIG_PATH = "src/utils/config.json"
+CONFIG_PATH = "config/sim_config.json"
 #Open config.json and load all the parameters, than close the congif.json file
 def load_sim_config(config_path: str) -> dict:
     """
@@ -29,7 +29,7 @@ def load_sim_config(config_path: str) -> dict:
         raise ValueError("config_path must be a string.")
     return config
 
-def load_train_config(config_path: str = "/home/o/Documents/donkeycar_rl/hyperparams/hp_config.json") -> dict:
+def load_train_config(config_path: str = "/config/train_config.json") -> dict:
     """
     Load configuration from a JSON file.
 
