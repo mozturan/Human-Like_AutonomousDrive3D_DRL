@@ -51,27 +51,6 @@ class LowPassFilter(ActionWrapper):
     
     def get_name(self):
         return "LowPassFilter"
-
-class MovingAverage(ActionWrapper):
-
-    def __init__(self, window_size = 5):
-        self.window_size = window_size
-        self.window = []
-
-    def reset(self):
-        self.window = []
-
-    def step(self, action):
-
-        self.window.append(action)
-
-        if len(self.window) > self.window_size:
-            self.window.pop(0)
-
-        return np.mean(self.window, axis=0)
-    
-    def get_name(self):
-        return "MovingAverage"
     
 class WeightedMovingAverage(ActionWrapper):
 
@@ -130,3 +109,4 @@ class InertiaTH(ActionWrapper):
     def get_name(self):
         return "InertiaTH"
         
+
