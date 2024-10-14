@@ -4,12 +4,8 @@ import math
 import os
 
 class RewardWrapper(ABC):
-    def __init__(self, state, action, done, info, max_cte, max_delta, sigma, action_cost, target_speed):
+    def __init__(self, max_cte, max_delta, sigma, action_cost, target_speed):
         self.reward = 0
-        self.state = state
-        self.action = action
-        self.done = done
-        self.info = info
         self.max_cte = max_cte
         self.max_delta = max_delta
         self.sigma = sigma
@@ -42,8 +38,10 @@ class RewardWrapper(ABC):
 
 class SmoothDrivingReward(RewardWrapper):
 
-    def __init__(self, state, action, done, info, max_cte, max_delta, sigma, action_cost, target_speed):
-        super().__init__(state, action, done, info, max_cte, max_delta, sigma, action_cost, target_speed)
+    def __init__(self, max_cte, max_delta, sigma, 
+                 action_cost, target_speed):
+        super().__init__(max_cte, max_delta, sigma, 
+                         action_cost, target_speed)
 
     def __call__ (self, action, info, done):
         self.reward = self._reward(action, info, done)

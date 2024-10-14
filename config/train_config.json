@@ -18,16 +18,29 @@
         "USE_NOISE": true
     },
 
-    "env_wrapper": {
-        "name": "Nothing",
-        "SIGMA": 0.2,
-        "ACTION_COST": 0.5,
-        "TARGET_SPEED": 1.0
+    "state_wrapper": {
+        "name": "ExtendedStateVector",
+        "parameters": {
+            "ae_path": " ",
+            "state_history": 3}
     },    
 
     "action_wrapper": {
         "name": "WeightedMovingAverage",
-        "parameters": {"window_size": 5}
+        "parameters": {
+            "window_size": 5
+        }
+    },
+
+    "reward_wrapper": {
+        "name": "SmoothDrivingReward",
+        "parameters": {
+            "max_cte": 5, 
+            "max_delta": 2, 
+            "sigma": 0.5, 
+            "action_cost": 0.3, 
+            "target_speed": 1.0    
+        }
     }
     
 }

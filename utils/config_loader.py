@@ -4,7 +4,7 @@ import json
 
 CONFIG_PATH = "config/sim_config.json"
 #Open config.json and load all the parameters, than close the congif.json file
-def load_sim_config(config_path: str) -> dict:
+def load_sim_config(config_path: str = CONFIG_PATH) -> dict:
     """
     Load configuration from a JSON file.
 

@@ -44,10 +44,9 @@ class StateWrapper(ABC):
 
 
 class ExtendedStateVector(StateWrapper):
-    def __init__(self, env, ae_path = None, state_history = 3) -> None:
-        super().__init__(env, ae_path)
+    def __init__(self, ae_path = None, state_history = 3) -> None:
+        super().__init__(ae_path)
 
-        self.env = env
         self.state_history = state_history
         self.encoder = self._ae_load(ae_path)
         self.reset()

@@ -31,7 +31,7 @@ class ActionClipping(ActionWrapper):
     def get_name(self):
         return "ActionClipping"
 
-class LowPassFilter(ActionWrapper):
+class ExponentialMovingAverage(ActionWrapper):
     def __init__(self, smoothing_coef = 0.3):
         
         self.smoothing_coef = smoothing_coef
