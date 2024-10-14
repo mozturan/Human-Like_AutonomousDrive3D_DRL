@@ -68,7 +68,6 @@ class SmoothDrivingReward(RewardWrapper):
             cost = np.mean((action- self.last_action)**2
                             / max_delta**2)
             cost = cost * self.action_cost
-
         else:
             cost = 0.0
 
@@ -83,3 +82,8 @@ class SmoothDrivingReward(RewardWrapper):
 
     def get_name(self):
         return "SmoothDrivingReward"
+
+    def reset(self):
+        self.reward = 0
+        self.last_action = None
+        

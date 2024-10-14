@@ -1,10 +1,12 @@
-from utils import load_sim_config, load_train_config, save_test_config, Performance
+from utils import load_sim_config, \
+    load_train_config, save_test_config, \
+        Performance
 import gym, gym_donkeycar
 import numpy as np
 import wandb, importlib
 
 score_history = []
-max_episode_length = 500
+max_episode_length = 300
 train_config = load_train_config()
 
 #* Initialize environment
@@ -26,7 +28,11 @@ reward_wrapper = getattr(wrappers_module, reward_wrapper)
 state_wrapper = state_wrapper(**train_config["state_wrapper"]["parameters"])
 action_wrapper = action_wrapper(**train_config["action_wrapper"]["parameters"])
 reward_wrapper = reward_wrapper(**train_config["reward_wrapper"]["parameters"])
+
 #! RESET WRAPPERS
+state_wrapper.reset(obs, 0.0, done, info)
+action_wrapper.reset()
+reward_wrapper.reset()
 
 #* Import agent
 agent_name = train_config["Agent"]["name"]
@@ -47,5 +53,21 @@ agent = agent(state_size = obs.shape,
               use_noise = train_config["Agent"]["USE_NOISE"])
 
 #* Initialize performance
-performance = Performance()
+performance = Performance(ref_cte=conf["max_cte"],
+                          ref_speed=conf["target_speed"])
+
+wandb.init(
+    project = "Lane_Keeping",
+    name = train_config["Model"],
+    config = train_config)
+
+#* saving model config
+
+
+
+for episode in range(max_episode_length):
+    pass
+
+
+
 
