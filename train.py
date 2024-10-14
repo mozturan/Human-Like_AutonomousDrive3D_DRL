@@ -5,8 +5,10 @@ import gym, gym_donkeycar
 import numpy as np
 import wandb, importlib
 
+save_path = ""
 score_history = []
 max_episode_length = 300
+best_score = -1000
 train_config = load_train_config()
 
 #* Initialize environment
@@ -29,7 +31,6 @@ state_wrapper = state_wrapper(**train_config["state_wrapper"]["parameters"])
 action_wrapper = action_wrapper(**train_config["action_wrapper"]["parameters"])
 reward_wrapper = reward_wrapper(**train_config["reward_wrapper"]["parameters"])
 
-#! RESET WRAPPERS
 state_wrapper.reset(obs, 0.0, done, info)
 action_wrapper.reset()
 reward_wrapper.reset()
@@ -62,12 +63,71 @@ wandb.init(
     config = train_config)
 
 #* saving model config
-
-
+agent.save(-1, save_path)
+save_test_config(train_config, 
+                 f"{save_path}/test_config.json")
 
 for episode in range(max_episode_length):
-    pass
+        
+        #* Reset environment and the wrapper
+        obs, reward, done, info = env.reset()
+        obs = state_wrapper.reset(obs, 0.0, done, info)
+        action_wrapper.reset()
+        reward_wrapper.reset()
 
+        episode_reward = 0
+        episode_len = 0
 
+        while not done and episode_len < max_episode_length:
 
+                #* Get action from agent and normalize it
+                action = agent.choose_action(obs, evaluate = True)
+                filtered_action = action_wrapper(action)
 
+                #* Step through environment and process the step
+                new_obs, reward, done, new_info \
+                    = env.step(np.array(filtered_action))
+
+                new_obs = state_wrapper(new_obs, action, done, new_info)
+                reward = reward_wrapper(action, info, done)
+
+                #* Update episode reward
+                episode_reward += reward
+                episode_len +=1
+
+                #* Store step in replay memory
+                agent.remember(obs, action, reward, 
+                        new_obs, done)
+
+                agent.train()
+
+                obs = new_obs
+
+                performance(cte = new_info["cte"], 
+                            speed = new_info["speed"], 
+                            action = filtered_action)
+
+        score_history.append(episode_reward)
+        avg_score = np.mean(score_history)
+        cumilative_last100_reward = np.mean(score_history[-100:])
+
+        #* Log to wandb
+        mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
+
+        wandb.log({"episode_length": episode_len, 
+                   "episode_reward": episode_reward, 
+                   "score_avg": avg_score,
+                   "cumilative_avg": cumilative_last100_reward,
+                   "mean_error": mean_error,
+                   "cte_avg": cte_avg,
+                   "speed_avg": speed_avg,
+                   "avg_delta": avg_delta
+                   })
+        
+        if cumilative_last100_reward > best_score:
+                best_score = cumilative_last100_reward
+                print("Best Score: ", best_score, "   Episode: ", episode)
+
+        agent.save(episode, save_path)
+
+env.close()

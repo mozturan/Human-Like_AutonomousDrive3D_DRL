@@ -41,8 +41,6 @@ class StateWrapper(ABC):
     def step(self, action) -> None:
         pass
 
-
-
 class ExtendedStateVector(StateWrapper):
     def __init__(self, ae_path = None, state_history = 3) -> None:
         super().__init__(ae_path)
@@ -104,3 +102,5 @@ class ExtendedStateVector(StateWrapper):
 
         current_state = np.concatenate((observation, info), axis=0)
         self.state.append(current_state)
+
+

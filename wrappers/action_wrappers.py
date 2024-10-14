@@ -67,7 +67,7 @@ class WeightedMovingAverage(ActionWrapper):
     def reset(self):
         self.window = []
 
-    def step(self, action):
+    def __call__(self, action):
 
         self.window.append(action)
 
