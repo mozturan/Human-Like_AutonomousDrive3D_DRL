@@ -35,10 +35,10 @@
     "reward_wrapper": {
         "name": "SmoothDrivingReward",
         "parameters": {
-            "max_cte": 5, 
-            "max_delta": 2, 
-            "sigma": 0.5, 
-            "action_cost": 0.3, 
+            "max_cte": 4.0, 
+            "max_delta": 1.6, 
+            "sigma": 0.2, 
+            "action_cost": 0.5, 
             "target_speed": 1.0    
         }
     }

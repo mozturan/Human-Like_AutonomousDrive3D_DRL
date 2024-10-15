@@ -10,17 +10,16 @@ score_history = []
 max_episode_length = 300
 best_score = -1000
 train_config = load_train_config("config/train_config.json")
+
 # create folder if not exist
 save_path = f"models/LaneKeeping/{train_config['Model']}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
-
 #* Initialize environment
 conf = load_sim_config()
 env = gym.make(train_config["Env"]["name"], conf=conf)
 obs,reward, done, info = env.reset()
-#*****************************************
 
 #* Import wrappers
 wrappers_module = "wrappers"
