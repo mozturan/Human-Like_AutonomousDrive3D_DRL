@@ -95,7 +95,7 @@ for episode in range(max_episode_length):
                     = env.step(np.array(filtered_action))
 
                 new_obs = state_wrapper(new_obs, action, done, new_info)
-                reward = reward_wrapper(action, info, done)
+                reward = reward_wrapper(action, new_info, done)
 
                 #* Update episode reward
                 episode_reward += reward
