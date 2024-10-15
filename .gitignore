@@ -12,3 +12,5 @@ gym-donkeycar
 __pycache__
 wandb/
 .txt
+others/
+lidar/
