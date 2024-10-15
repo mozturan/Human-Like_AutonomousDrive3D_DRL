@@ -44,10 +44,10 @@ class StateWrapper(ABC):
 class ExtendedStateVector(StateWrapper):
     def __init__(self, ae_path = None, state_history = 3) -> None:
         super().__init__(ae_path)
-
+        
         self.state_history = state_history
+        self.state = deque(maxlen=self.state_history)
         self.encoder = self._ae_load(ae_path)
-        self.reset()
 
     def __call__(self, observation, action, done, info):
         
@@ -100,7 +100,7 @@ class ExtendedStateVector(StateWrapper):
         observation_ = self._encode(observation)
         info_ = self._info(info, action)
 
-        current_state = np.concatenate((observation, info), axis=0)
+        current_state = np.concatenate((observation_, info_), axis=0)
         self.state.append(current_state)
 
 

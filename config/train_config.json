@@ -6,7 +6,7 @@
     "Model" : "Noisy-WeightedMovingAverage",
 
     "Agent": {
-        "name": "sac",
+        "name": "SAC",
         "ACTION_SIZE": 2,
         "HIDDEN_SIZE": 512,
         "MIN_SIZE": 100,
@@ -21,7 +21,7 @@
     "state_wrapper": {
         "name": "ExtendedStateVector",
         "parameters": {
-            "ae_path": " ",
+            "ae_path": "models/encoder_tracks/",
             "state_history": 3}
     },    
 

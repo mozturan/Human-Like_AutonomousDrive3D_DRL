@@ -9,10 +9,6 @@ class ActionWrapper(ABC):
         pass
 
     @abstractmethod
-    def step(self, action):
-        pass
-
-    @abstractmethod
     def get_name(self):
         pass
 

@@ -1,5 +1,5 @@
-from buffer import ReplayBuffer
-from noise import OrnsteinUhlenbeckActionNoise as noise_OU
+from . import ReplayBuffer 
+from .noise import OrnsteinUhlenbeckActionNoise as noise_OU
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers.legacy import Adam

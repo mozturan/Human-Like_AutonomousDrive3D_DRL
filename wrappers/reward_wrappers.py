@@ -55,9 +55,9 @@ class SmoothDrivingReward(RewardWrapper):
         if info["forward_vel"] < 0:
             return -1.0
         
-        reward_cte = self._calculate_cte_reward(info["cte"])
-        reward_speed = self._calculate_speed_reward(info["speed"])
-        reward_action = self._calculate_action_reward(np.array(action))
+        reward_cte = self._cte_reward(info["cte"])
+        reward_speed = self._speed_reward(info["speed"])
+        reward_action = self._action_reward(np.array(action))
 
         return (reward_cte * reward_speed) / (reward_action + 1)
     

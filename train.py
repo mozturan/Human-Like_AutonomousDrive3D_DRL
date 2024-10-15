@@ -4,17 +4,23 @@ from utils import load_sim_config, \
 import gym, gym_donkeycar
 import numpy as np
 import wandb, importlib
+import os
 
-save_path = ""
 score_history = []
 max_episode_length = 300
 best_score = -1000
-train_config = load_train_config()
+train_config = load_train_config("config/train_config.json")
+# create folder if not exist
+save_path = f"models/LaneKeeping/{train_config['Model']}"
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
 
 #* Initialize environment
 conf = load_sim_config()
 env = gym.make(train_config["Env"]["name"], conf=conf)
 obs,reward, done, info = env.reset()
+#*****************************************
 
 #* Import wrappers
 wrappers_module = "wrappers"
@@ -31,7 +37,7 @@ state_wrapper = state_wrapper(**train_config["state_wrapper"]["parameters"])
 action_wrapper = action_wrapper(**train_config["action_wrapper"]["parameters"])
 reward_wrapper = reward_wrapper(**train_config["reward_wrapper"]["parameters"])
 
-state_wrapper.reset(obs, 0.0, done, info)
+obs = state_wrapper.reset(obs, 0.0, done, info)
 action_wrapper.reset()
 reward_wrapper.reset()
 
@@ -55,7 +61,7 @@ agent = agent(state_size = obs.shape,
 
 #* Initialize performance
 performance = Performance(ref_cte=conf["max_cte"],
-                          ref_speed=conf["target_speed"])
+                          ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
     project = "Lane_Keeping",
