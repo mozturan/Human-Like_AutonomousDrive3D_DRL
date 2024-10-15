@@ -12,4 +12,8 @@ gym-donkeycar
 __pycache__
 wandb/
 .txt
+<<<<<<< HEAD
+=======
+others/
+>>>>>>> 56520abb4de16c816eaad1fdaccc30e8ffbca0c4
 lidar/

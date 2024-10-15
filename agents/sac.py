@@ -1,20 +1,18 @@
-from src.agents.buffer import ReplayBuffer
-from src.utils.board import ModifiedTensorBoard
+from . import ReplayBuffer 
+from .noise import OrnsteinUhlenbeckActionNoise as noise_OU
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers.legacy import Adam
 import tensorflow as tf
+import tensorflow_probability as tfp
 import keras.backend as K
-import numpy as np
 import gc
+import numpy as np
 import os
 import time
-import tensorflow_probability as tfp
 import sys
 import random as rndm
 import keras
-from src.utils.noise import OrnsteinUhlenbeckActionNoise as noise_OU
-
 tf.random.set_seed(43)
 
 class CriticNetwork(keras.Model):
