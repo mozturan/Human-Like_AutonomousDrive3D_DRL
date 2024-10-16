@@ -138,7 +138,7 @@ class MultiGoalStateVector(ExtendedStateVector):
         return np.reshape(lidar, (16,)) 
     
     def _lidar(self, lidar) -> np.array:
-        lidar = self._lidar_normalize(lidar)
+        lidar = self._normalize_lidar(lidar)
         lidar = np.expand_dims(lidar, axis=0)
         lidar = self._reduct_lidar(lidar)
         return lidar

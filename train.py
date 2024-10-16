@@ -63,7 +63,7 @@ performance = Performance(ref_cte=conf["max_cte"],
                           ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
-    project = "Lane_Keeping",
+    project = "Multi-Goal",
     name = train_config["Model"],
     config = train_config)
 

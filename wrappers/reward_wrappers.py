@@ -96,13 +96,14 @@ class MultiGoalReward(SmoothDrivingReward):
                          action_cost, target_speed)
 
     def __call__ (self, action, info, done):
-        self.reward, done = self._reward(action, info, done)
-        return self.reward, done
+        self.reward = self._reward(action, info, done)
+        done_ = self._done(info, done)
+        return self.reward, done_
     
     def _done(self, info, done):
 
         lid = info["lidar"].copy()  
-        lid = self._lidar_normalize(lid)
+        lid = self._normalize_lidar(lid)
 
         if lid.min() < 0.11:
             done = True
@@ -112,8 +113,8 @@ class MultiGoalReward(SmoothDrivingReward):
     def _normalize_lidar(self, lidar) -> np.array:
         #* Normalize lidar
         normalized_lidar = lidar.copy()
-        normalized_lidar[normalized_lidar < 0] = self.max_lidar_range
-        normalized_lidar /= self.max_lidar_range
+        normalized_lidar[normalized_lidar < 0] = 20.0
+        normalized_lidar /= 20.0
         
         return normalized_lidar
 
@@ -131,5 +132,6 @@ class MultiGoalReward(SmoothDrivingReward):
         reward_cte = self._cte_reward(info["cte"])
         reward_speed = self._speed_reward(info["speed"])
         reward_action = self._action_reward(np.array(action))
+        reward = (reward_cte * reward_speed) / (reward_action + 1)
 
-        return (reward_cte * reward_speed) / (reward_action + 1), done    
+        return reward    
