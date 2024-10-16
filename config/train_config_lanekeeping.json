@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "NSAC-WMA",
+    "Model" : "Noisy-WeightedMovingAverage",
 
     "Agent": {
         "name": "SAC",
