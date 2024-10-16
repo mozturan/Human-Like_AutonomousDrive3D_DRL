@@ -72,7 +72,7 @@ for episode in range(1):
                     = env.step(np.array(filtered_action))
 
                 new_obs = state_wrapper(new_obs, action, done, new_info)
-                reward = reward_wrapper(action, new_info, done)
+                reward, done = reward_wrapper(action, new_info, done)
 
                 #* Update performance
                 performance(cte = new_info["cte"], speed = new_info["speed"], action = filtered_action)

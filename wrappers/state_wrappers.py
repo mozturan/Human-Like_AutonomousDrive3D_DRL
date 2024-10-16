@@ -104,3 +104,52 @@ class ExtendedStateVector(StateWrapper):
         self.state.append(current_state)
 
 
+class MultiGoalStateVector(ExtendedStateVector):
+    def __init__(self, ae_path = None, lidar_ae_path = None, max_lidar_range = 20, state_history = 3) -> None:
+        super().__init__(ae_path)
+        
+        self.state_history = state_history
+        self.max_lidar_range = max_lidar_range
+        self.state = deque(maxlen=self.state_history)
+        self.encoder = self._ae_load(ae_path)
+        self.lidar_ae = self._lidar_ae_load(lidar_ae_path)
+
+    def _lidar_ae_load(self, model_folder = "models/encoder_lidar/"):
+        encoder_file = os.path.join(model_folder) + "lidar_encoder.json"
+        weights_file = os.path.join(model_folder) + "lidar_encoder.h5"
+
+        with open(encoder_file, "r") as json_file:
+            encoder_json = json_file.read()
+        encoder = load(encoder_json)
+        encoder.load_weights(weights_file)
+
+        return encoder
+
+    def _normalize_lidar(self, lidar) -> np.array:
+        #* Normalize lidar
+        normalized_lidar = lidar.copy()
+        normalized_lidar[normalized_lidar < 0] = self.max_lidar_range
+        normalized_lidar /= self.max_lidar_range
+        
+        return normalized_lidar
+
+    def _reduct_lidar(self, lidar) -> np.array:
+        lidar = self.lidar_ae.predict(lidar, verbose=0)
+        return np.reshape(lidar, (16,)) 
+    
+    def _lidar(self, lidar) -> np.array:
+        lidar = self._lidar_normalize(lidar)
+        lidar = np.expand_dims(lidar, axis=0)
+        lidar = self._reduct_lidar(lidar)
+        return lidar
+    
+    def step(self, observation, action, done, info):
+
+        observation_ = self._encode(observation)
+        lidar_ = self._lidar(info["lidar"].copy())
+        info_ = self._info(info, action)
+
+        current_state = np.concatenate((observation_, lidar_ ,info_), axis=0)
+        self.state.append(current_state)
+
+        
