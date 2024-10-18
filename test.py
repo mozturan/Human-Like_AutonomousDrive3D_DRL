@@ -51,7 +51,7 @@ def chose_action (model, state):
 
         return actions[0]
 
-for episode in range(1):
+for episode in range(100000):
 
         #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
@@ -61,7 +61,7 @@ for episode in range(1):
 
         episode_len = 0
 
-        while not done and episode_len < max_episode_length:
+        while not done: # and episode_len < max_episode_length:
 
                 #* Get action from agent and normalize it
                 action = chose_action(model, obs)

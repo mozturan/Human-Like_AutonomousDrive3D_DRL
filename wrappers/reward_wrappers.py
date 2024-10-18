@@ -105,7 +105,7 @@ class MultiGoalReward(SmoothDrivingReward):
         lid = info["lidar"].copy()  
         lid = self._normalize_lidar(lid)
 
-        if lid.min() < 0.11:
+        if lid.min() < 0.1:
             done = True
         return done
     
