@@ -1,6 +1,6 @@
 {
     "port": 9091,
-    "max_cte": 5.0,
+    "max_cte": 4.0,
     "cam_config":{"img_w": 160, "img_h": 120, "img_d": 3},
     "body_style": "f1",
     "body_rgb": [0,0,0],
