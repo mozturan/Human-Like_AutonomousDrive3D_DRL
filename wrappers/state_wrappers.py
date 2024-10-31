@@ -105,7 +105,7 @@ class ExtendedStateVector(StateWrapper):
 
 
 class MultiGoalStateVector(ExtendedStateVector):
-    def __init__(self, ae_path = None, lidar_ae_path = None, max_lidar_range = 20, state_history = 3) -> None:
+    def __init__(self, ae_path = None, lidar_ae_path = None, max_lidar_range = 20.0, state_history = 3) -> None:
         super().__init__(ae_path)
         
         self.state_history = state_history
