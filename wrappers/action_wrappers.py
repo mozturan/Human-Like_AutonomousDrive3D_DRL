@@ -19,7 +19,7 @@ class ActionClipping(ActionWrapper):
     def reset(self):
         pass
     
-    def step(self, action):
+    def __call__(self, action):
         smoothed_action = [action[0], (action[1] / 2.0)+0.1]
 
         return smoothed_action

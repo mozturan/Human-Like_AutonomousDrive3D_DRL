@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "NSAC-WMA",
+    "Model" : "NSAC",
 
     "Agent": {
         "name": "SAC",
@@ -28,9 +28,8 @@
     },    
 
     "action_wrapper": {
-        "name": "WeightedMovingAverage",
+        "name": "ActionClipping",
         "parameters": {
-            "window_size": 5
         }
     },
 
