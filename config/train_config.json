@@ -3,10 +3,10 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC",
+    "Model" : "SAC_",
 
     "Agent": {
-        "name": "SAC",
+        "name": "SAC_",
         "ACTION_SIZE": 2,
         "HIDDEN_SIZE": 512,
         "MIN_SIZE": 100,

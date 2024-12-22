@@ -63,7 +63,7 @@ performance = Performance(ref_cte=conf["max_cte"],
                           ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
-    project = "trash",
+    project = "Demo",
     name = train_config["Model"],
     config = train_config)
 
@@ -74,6 +74,7 @@ save_test_config(train_config,
 
 for episode in range(600):
         
+        last_action = np.zeros(train_config["Agent"]["ACTION_SIZE"])
         #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
         obs = state_wrapper.reset(obs, 0.0, done, info)
@@ -102,11 +103,12 @@ for episode in range(600):
 
                 #* Store step in replay memory
                 agent.remember(obs, action, reward, 
-                        new_obs, done)
+                        new_obs, done, last_action)
 
                 agent.train()
 
                 obs = new_obs
+                last_action = action
 
                 performance(cte = new_info["cte"], 
                             speed = new_info["speed"], 

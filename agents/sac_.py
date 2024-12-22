@@ -285,7 +285,7 @@ class SAC_:
 
             #TODO: Implement loss function smothering values
             smoothness_penalty = tf.reduce_mean(tf.square(new_policy_actions - _actions)) #??a
-            smoothness_weight = 0.1
+            smoothness_weight = 0.3
 
             log_probs = tf.squeeze(log_probs,1)
             q1_new_policy = self.critic_1(states, new_policy_actions)
