@@ -9,7 +9,7 @@ import os
 score_history = []
 max_episode_length = 300
 best_score = -1000
-train_config = load_train_config("config/train_config.json")
+train_config = load_train_config("config/train_config_noise.json")
 
 # create folder if not exist
 save_path = f"models/new_generations/{train_config['Model']}"

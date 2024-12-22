@@ -1,0 +1,43 @@
+{
+    "Env": {
+        "name": "donkey-generated-track-v0"
+    },
+
+    "Model" : "SAC+Noise",
+
+    "Agent": {
+        "name": "SAC",
+        "ACTION_SIZE": 2,
+        "HIDDEN_SIZE": 512,
+        "MIN_SIZE": 100,
+        "BATCH_SIZE": 256,
+        "MAX_ACTION": 0.8,
+        "TEMPERATURE": 0.2,
+        "TAU": 0.005,
+        "GAMMA": 0.99,
+        "USE_NOISE": true
+    },
+
+    "state_wrapper": {
+        "name": "ExtendedStateVector",
+        "parameters": {
+            "ae_path": "models/encoder_tracks/",
+            "state_history": 2}
+    },    
+
+    "action_wrapper": {
+        "name": "ActionClipping",
+        "parameters": {}},
+
+    "reward_wrapper": {
+        "name": "SmoothDrivingReward",
+        "parameters": {
+            "max_cte": 4.0, 
+            "max_delta": 1.6, 
+            "sigma": 0.2, 
+            "action_cost": 0.5, 
+            "target_speed": 1.0    
+        }
+    }
+    
+}
