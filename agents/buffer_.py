@@ -178,6 +178,49 @@ class ReplayBuffer:
     def __len__(self):
         return self.mem_cntr
     
+class ExtendedReplayBuffer(ReplayBuffer):
+    def __init__(self, max_size, input_shape, n_actions, discrete = False):
+        super().__init__(max_size, input_shape, n_actions, discrete)
+
+        self.previous_action_memory = np.zeros((self.mem_size, n_actions), dtype=np.float32)
+
+    def store_transition(self, state, action, reward, state_, done, action_previous):
+
+        index = self.mem_cntr % self.mem_size
+
+        self.state_memory[index] = state
+        self.new_state_memory[index] = state_
+
+        if self.discrete:
+
+            #* Create an zeros-array size of the number of actions
+            actions = np.zeros(self.action_memory.shape[1])
+            #* Make 1 the value of performed action
+            actions[action] = 1.0
+            #* Store in action memory
+            self.action_memory[index] = actions
+        else:
+            self.action_memory[index] = action
+
+        self.previous_action_memory[index] = action_previous
+        self.reward_memory[index] = reward
+        self.terminal_memory[index] = done
+
+        self.mem_cntr += 1
+
+    def sample_buffer(self, batch_size):
+        max_mem = min(self.mem_cntr, self.mem_size)
+
+        batch = np.random.choice(max_mem, batch_size)
+
+        states = self.state_memory[batch]
+        states_ = self.new_state_memory[batch]
+        actions = self.action_memory[batch]
+        rewards = self.reward_memory[batch]
+        dones = self.terminal_memory[batch]
+        _actions = self.previous_action_memory[batch]
+
+        return states, actions, rewards, states_, dones, _actions
 
 class ExtendedReplayBuffer(ReplayBuffer):
     def __init__(self, max_size, input_shape, n_actions, discrete = False):
