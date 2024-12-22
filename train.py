@@ -12,7 +12,7 @@ best_score = -1000
 train_config = load_train_config("config/train_config.json")
 
 # create folder if not exist
-save_path = f"models/LaneKeeping/{train_config['Model']}"
+save_path = f"models/demos/{train_config['Model']}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -63,7 +63,7 @@ performance = Performance(ref_cte=conf["max_cte"],
                           ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
-    project = "Multi-Goal",
+    project = "Demo",
     name = train_config["Model"],
     config = train_config)
 

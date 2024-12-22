@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "NSAC",
+    "Model" : "SAC",
 
     "Agent": {
         "name": "SAC",
@@ -15,26 +15,22 @@
         "TEMPERATURE": 0.2,
         "TAU": 0.005,
         "GAMMA": 0.99,
-        "USE_NOISE": true
+        "USE_NOISE": false
     },
 
     "state_wrapper": {
-        "name": "MultiGoalStateVector",
+        "name": "ExtendedStateVector",
         "parameters": {
             "ae_path": "models/encoder_tracks/",
-            "lidar_ae_path": "models/encoder_tracks/",
-            "max_lidar_range": 20,
-            "state_history": 3}
+            "state_history": 2}
     },    
 
     "action_wrapper": {
         "name": "ActionClipping",
-        "parameters": {
-        }
-    },
+        "parameters": {}},
 
     "reward_wrapper": {
-        "name": "MultiGoalReward",
+        "name": "SmoothDrivingReward",
         "parameters": {
             "max_cte": 4.0, 
             "max_delta": 1.6, 
