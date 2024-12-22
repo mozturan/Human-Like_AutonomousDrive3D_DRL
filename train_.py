@@ -12,7 +12,7 @@ best_score = -1000
 train_config = load_train_config("config/train_config.json")
 
 # create folder if not exist
-save_path = f"models/demos/{train_config['Model']}"
+save_path = f"models/trash/{train_config['Model']}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -63,7 +63,7 @@ performance = Performance(ref_cte=conf["max_cte"],
                           ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
-    project = "Demo",
+    project = "trash",
     name = train_config["Model"],
     config = train_config)
 
@@ -72,7 +72,7 @@ agent.save(-1, save_path)
 save_test_config(train_config, 
                  f"{save_path}/test_config.json")
 
-for episode in range(600):
+for episode in range(250):
         
         last_action = np.zeros(train_config["Agent"]["ACTION_SIZE"])
         #* Reset environment and the wrapper
