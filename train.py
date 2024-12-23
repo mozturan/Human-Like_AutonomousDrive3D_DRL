@@ -6,6 +6,8 @@ import numpy as np
 import wandb, importlib
 import os
 
+actor_loss_history = []
+critic_loss_history = []
 score_history = []
 max_episode_length = 300
 best_score = -1000
@@ -104,8 +106,11 @@ for episode in range(250):
                 agent.remember(obs, action, reward, 
                         new_obs, done)
 
-                agent.train()
+                actor_loss, critic_loss = agent.train()
+                actor_loss_history.append(actor_loss)
+                critic_loss_history.append(critic_loss)
 
+                #* Update observation                
                 obs = new_obs
 
                 performance(cte = new_info["cte"], 
@@ -134,5 +139,10 @@ for episode in range(250):
                 print("Best Score: ", best_score, "   Episode: ", episode)
 
         agent.save(episode, save_path)
+
+actor_loss_history = np.array(actor_loss_history)
+critic_loss_history = np.array(critic_loss_history)
+np.save(f"{save_path}/actor_loss.npy", actor_loss_history)
+np.save(f"{save_path}/critic_loss.npy", critic_loss_history)
 
 env.close()

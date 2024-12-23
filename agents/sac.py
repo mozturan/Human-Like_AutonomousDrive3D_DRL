@@ -238,7 +238,7 @@ class SAC:
 
         #* If not enough samples in the memory, don't train
         if self.memory.mem_cntr < self.min_size:
-            return
+            return 0,0
 
         #* Sample from memory
         state, action, reward, new_state, done = \
@@ -322,7 +322,7 @@ class SAC:
         gc.collect()
         K.clear_session()
 
-        return actor_loss, critic_1_loss
+        return actor_loss.numpy(), critic_1_loss.numpy()
 
     def save(self, episode, path):
 
