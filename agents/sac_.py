@@ -328,7 +328,7 @@ class SAC_:
         gc.collect()
         K.clear_session()
 
-        return actor_loss, critic_1_loss
+        return actor_loss.numpy(), critic_1_loss.numpy()
 
     def save(self, episode, path):
 
