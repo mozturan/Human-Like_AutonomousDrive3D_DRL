@@ -36,7 +36,7 @@ class ExponentialMovingAverage(ActionWrapper):
     def reset(self):
         self.smoothed_action = None
 
-    def step(self, action):
+    def __call__(self, action):
 
         if self.smoothed_action is None:
                 self.smoothed_action = np.zeros_like(action)
