@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC",
+    "Model" : "SAC+Noise+EMA",
 
     "Agent": {
         "name": "SAC",
@@ -15,7 +15,7 @@
         "TEMPERATURE": 0.2,
         "TAU": 0.005,
         "GAMMA": 0.99,
-        "USE_NOISE": false
+        "USE_NOISE": true
     },
 
     "state_wrapper": {
@@ -26,7 +26,7 @@
     },    
 
     "action_wrapper": {
-        "name": "ActionClipping",
+        "name": "ExponentialMovingAverage",
         "parameters": {}},
 
     "reward_wrapper": {

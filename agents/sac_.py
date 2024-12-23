@@ -238,7 +238,7 @@ class SAC_:
 
         #* If not enough samples in the memory, don't train
         if self.memory.mem_cntr < self.min_size:
-            return
+            return 0,0
 
         #* Sample from memory
         state, action, reward, new_state, done, _action = \
