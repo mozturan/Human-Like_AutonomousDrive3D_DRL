@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC",
+    "Model" : "SAC+Noise",
 
     "Agent": {
         "name": "SAC",
@@ -15,7 +15,7 @@
         "TEMPERATURE": 0.2,
         "TAU": 0.005,
         "GAMMA": 0.99,
-        "USE_NOISE": false
+        "USE_NOISE": true
     },
 
     "state_wrapper": {
@@ -32,7 +32,7 @@
         "parameters": {}},
 
     "reward_wrapper": {
-        "name": "SmoothDrivingReward",
+        "name": "MultiGoalReward",
         "parameters": {
             "max_cte": 4.0, 
             "max_delta": 1.6, 
