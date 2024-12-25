@@ -74,7 +74,7 @@ agent.save(-1, save_path)
 save_test_config(train_config, 
                  f"{save_path}/test_config.json")
 
-for episode in range(450):
+for episode in range(1000):
         
         #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
