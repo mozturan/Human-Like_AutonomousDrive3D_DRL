@@ -19,9 +19,11 @@
     },
 
     "state_wrapper": {
-        "name": "ExtendedStateVector",
+        "name": "MultiGoalStateVector",
         "parameters": {
             "ae_path": "models/encoder_tracks/",
+            "lidar_ae_path": "models/encoder_tracks/",
+            "max_lidar_range": 20,
             "state_history": 2}
     },    
 
@@ -29,15 +31,15 @@
         "name": "ActionClipping",
         "parameters": {}},
 
-    "reward_wrapper": {
-        "name": "SmoothDrivingReward",
-        "parameters": {
-            "max_cte": 4.0, 
-            "max_delta": 1.6, 
-            "sigma": 0.2, 
-            "action_cost": 0.5, 
-            "target_speed": 1.0    
+        "reward_wrapper": {
+            "name": "MultiGoalReward",
+            "parameters": {
+                "max_cte": 4.0, 
+                "max_delta": 1.6, 
+                "sigma": 0.2, 
+                "action_cost": 0.5, 
+                "target_speed": 1.0    
+            }
         }
-    }
     
 }

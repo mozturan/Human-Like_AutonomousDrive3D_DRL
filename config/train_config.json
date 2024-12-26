@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC+Noise+WMA",
+    "Model" : "SAC+Noise+WMA1",
 
     "Agent": {
         "name": "SAC",
