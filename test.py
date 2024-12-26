@@ -7,9 +7,9 @@ import importlib
 import keras
 import tensorflow as tf
 
-max_episode_length = 500
-test_config_path = "models/demos/SAC_/test_config.json"
-model_path = "models/demos/SAC_/_250.keras"
+max_episode_length = 1000
+test_config_path = "models/holy_nation/SAC+Noise+WMAx/test_config.json"
+model_path = "models/holy_nation/SAC+Noise+WMAx/_636.keras"
 
 test_config = load_train_config(test_config_path)
 
@@ -51,7 +51,7 @@ def chose_action (model, state):
 
         return actions[0]
 
-for episode in range(100000):
+for episode in range(1):
 
         #* Reset environment and the wrapper
         obs, reward, done, info = env.reset()
@@ -61,7 +61,7 @@ for episode in range(100000):
 
         episode_len = 0
 
-        while not done: # and episode_len < max_episode_length:
+        while not done and episode_len < max_episode_length:
 
                 #* Get action from agent and normalize it
                 action = chose_action(model, obs)
@@ -81,6 +81,7 @@ for episode in range(100000):
                 #* Update observation
                 obs = new_obs
 
+        print(test_config_path)
         mean_error, cte_avg, speed_avg, avg_delta = performance.get_metrics()
         print("Mean Error: ", mean_error,
               "   CTE: ", cte_avg,

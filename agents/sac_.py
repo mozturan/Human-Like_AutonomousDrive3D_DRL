@@ -284,7 +284,7 @@ class SAC_:
             new_policy_actions, log_probs = self.actor.sample_normal(states, reparameterize=True)
 
             #TODO: Implement loss function smothering values
-            smoothness_penalty = tf.reduce_mean(tf.square(new_policy_actions - _actions)) #??a
+            smoothness_penalty = tf.reduce_mean(tf.square(new_policy_actions - _actions))
             smoothness_weight = 0.3
 
             log_probs = tf.squeeze(log_probs,1)
@@ -296,8 +296,7 @@ class SAC_:
 
             actor_loss = (self.tempereture*log_probs) - crtitic_value
             actor_loss = tf.math.reduce_mean(actor_loss)
-            actor_loss += smoothness_weight*smoothness_penalty #??b  
-
+            actor_loss = (1-smoothness_weight)*actor_loss + smoothness_weight*smoothness_penalty
         actor_network_gradients = tape.gradient(actor_loss,
                                                 self.actor.trainable_variables)
         self.actor.optimizer.apply_gradients(zip(actor_network_gradients,
