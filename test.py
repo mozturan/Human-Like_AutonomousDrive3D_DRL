@@ -7,7 +7,7 @@ import importlib
 import keras
 import tensorflow as tf
 
-max_episode_length = 1000
+max_episode_length = 500
 test_config_path = "models/holy_nation/SAC+Noise+WMAx/test_config.json"
 model_path = "models/holy_nation/SAC+Noise+WMAx/_636.keras"
 

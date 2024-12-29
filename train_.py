@@ -140,10 +140,10 @@ for episode in range(1000):
                 print("Best Score: ", best_score, "   Episode: ", episode)
 
         agent.save(episode, save_path)
-        actor_loss_history = np.array(actor_loss_history)
-        critic_loss_history = np.array(critic_loss_history)
-        np.save(f"{save_path}/actor_loss.npy", actor_loss_history)
-        np.save(f"{save_path}/critic_loss.npy", critic_loss_history)
+        actor_loss_history_array = np.array(actor_loss_history)
+        critic_loss_history_array = np.array(critic_loss_history)
+        np.save(f"{save_path}/actor_loss.npy", actor_loss_history_array)
+        np.save(f"{save_path}/critic_loss.npy", critic_loss_history_array)
 
 
 

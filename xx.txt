@@ -1,0 +1,24 @@
+models/holy_nation/SAC/test_config.json
+Mean Error:  5.245345765538183    CTE:  0.8212032794486733    Speed:  0.8956369711281253    Delta:  0.7613257051410303
+Episode Len: 500
+
+models/holy_nation/SAC+Noise/test_config.json
+Mean Error:  5.733884413254282    CTE:  0.6733499404282776    Speed:  0.9768575347941776    Delta:  0.6927063042714584
+Episode Len: 500
+
+models/holy_nation/SAC_+Noise/test_config.json
+Mean Error:  5.220828058007243    CTE:  0.8387072571357712    Speed:  0.9149282830464679    Delta:  0.3599029823056027
+Episode Len: 500
+
+models/holy_nation/SAC__+Noise/test_config.json
+Mean Error:  5.226585991154962    CTE:  0.8385621288600378    Speed:  0.8465578635977103    Delta:  0.3119312422079472
+Episode Len: 500
+
+models/holy_nation/SAC+Noise+EMA/test_config.json
+Mean Error:  5.535972602542288    CTE:  0.7218463281521109    Speed:  0.9247913721459942    Delta:  0.3578157612732143
+Episode Len: 500
+
+models/holy_nation/SAC+Noise+WMAx/test_config.json
+Mean Error:  3.978349035877085    CTE:  1.2883240174446255    Speed:  0.9017347770065419    Delta:  0.05864249110892457
+Episode Len: 500
+
