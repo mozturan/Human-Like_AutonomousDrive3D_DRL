@@ -3,19 +3,19 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC+Noise+WMA1",
+    "Model" : "SAC",
 
     "Agent": {
         "name": "SAC",
         "ACTION_SIZE": 2,
-        "HIDDEN_SIZE": 512,
+        "HIDDEN_SIZE": 1024,
         "MIN_SIZE": 100,
         "BATCH_SIZE": 256,
         "MAX_ACTION": 0.8,
         "TEMPERATURE": 0.2,
         "TAU": 0.005,
         "GAMMA": 0.99,
-        "USE_NOISE": true
+        "USE_NOISE": false
     },
 
     "state_wrapper": {
@@ -28,7 +28,7 @@
     },    
 
     "action_wrapper": {
-        "name": "WeightedMovingAverage",
+        "name": "ActionClipping",
         "parameters": {}},
 
     "reward_wrapper": {

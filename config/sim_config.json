@@ -4,7 +4,7 @@
     "cam_config":{"img_w": 160, "img_h": 120, "img_d": 3},
     "body_style": "f1",
     "body_rgb": [0,0,0],
-    "car_name": "SAC + action noise + WMA filter",
+    "car_name": "F1",
     "font_size": 20,
     "racer_name": "test",
     "country": "Middle East",

@@ -8,13 +8,16 @@ import os
 
 actor_loss_history = []
 critic_loss_history = []
+actor_loss_history = np.array(actor_loss_history)
+critic_loss_history = np.array(critic_loss_history)
+
 score_history = []
 max_episode_length = 300
 best_score = -1000
 train_config = load_train_config("config/train_config.json")
 
 # create folder if not exist
-save_path = f"models/holy_nation/{train_config['Model']}"
+save_path = f"models/final_destination/{train_config['Model']}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -65,7 +68,7 @@ performance = Performance(ref_cte=conf["max_cte"],
                           ref_speed=train_config["reward_wrapper"]["parameters"]["target_speed"])
 
 wandb.init(
-    project = "holy_nation",
+    project = "final_destination",
     name = train_config["Model"],
     config = train_config)
 
@@ -107,8 +110,8 @@ for episode in range(1000):
                         new_obs, done)
 
                 actor_loss, critic_loss = agent.train()
-                actor_loss_history.append(actor_loss)
-                critic_loss_history.append(critic_loss)
+                np.append(actor_loss_history, actor_loss)
+                np.append(critic_loss_history, critic_loss)
 
                 #* Update observation                
                 obs = new_obs
@@ -139,8 +142,6 @@ for episode in range(1000):
                 print("Best Score: ", best_score, "   Episode: ", episode)
 
         agent.save(episode, save_path)
-        actor_loss_history = np.array(actor_loss_history)
-        critic_loss_history = np.array(critic_loss_history)
         np.save(f"{save_path}/actor_loss.npy", actor_loss_history)
         np.save(f"{save_path}/critic_loss.npy", critic_loss_history)
 env.close()
