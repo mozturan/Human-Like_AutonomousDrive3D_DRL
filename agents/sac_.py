@@ -283,9 +283,8 @@ class SAC_:
             #! in the original paper, they reparameterize here! Check for this
             new_policy_actions, log_probs = self.actor.sample_normal(states, reparameterize=True)
 
-            #TODO: Implement loss function smothering values
             smoothness_penalty = tf.reduce_mean(tf.square(new_policy_actions - _actions))
-            smoothness_weight = 0.3
+            smoothness_weight = 0.35
 
             log_probs = tf.squeeze(log_probs,1)
             q1_new_policy = self.critic_1(states, new_policy_actions)

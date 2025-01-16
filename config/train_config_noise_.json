@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "SAC__+Noise",
+    "Model" : "SAC-CL+Noise",
 
     "Agent": {
         "name": "SAC_",
