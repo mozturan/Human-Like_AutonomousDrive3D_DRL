@@ -8,7 +8,7 @@
     "Agent": {
         "name": "SAC_",
         "ACTION_SIZE": 2,
-        "HIDDEN_SIZE": 512,
+        "HIDDEN_SIZE": 1024,
         "MIN_SIZE": 100,
         "BATCH_SIZE": 256,
         "MAX_ACTION": 0.8,

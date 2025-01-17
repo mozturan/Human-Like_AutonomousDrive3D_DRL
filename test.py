@@ -8,8 +8,8 @@ import keras
 import tensorflow as tf
 
 max_episode_length = 500
-test_config_path = "models/holy_nation/SAC+Noise+WMAx/test_config.json"
-model_path = "models/holy_nation/SAC+Noise+WMAx/_636.keras"
+test_config_path = "models/final_destination/SAC-CL+Noise/test_config.json"
+model_path = "models/final_destination/SAC-CL+Noise/_361.keras"
 
 test_config = load_train_config(test_config_path)
 
