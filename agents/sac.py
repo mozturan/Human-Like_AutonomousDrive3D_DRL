@@ -95,9 +95,6 @@ class ActorNetwork(keras.Model):
         mu, sigma = self.call(state)
         probabilities = tfp.distributions.Normal(mu, sigma)
 
-        #! This part is for reparameterization trick
-        #TODO: Check for reparameterization tricks
-
         if reparameterize:
             actions = probabilities.sample() # + something else if you want to implement
         else:

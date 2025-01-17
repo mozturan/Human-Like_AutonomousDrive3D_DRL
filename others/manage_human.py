@@ -8,14 +8,6 @@ import gym_donkeycar  # noqa: F401
 import numpy as np
 import pygame
 from pygame.locals import *  # noqa: F403
-from src.utils.config_loader import load_config, CONFIG_PATH
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--folder", help="Path to folder where images will be saved", 
-                    type=str, default="data/pack/generated_track_human")
-parser.add_argument("-n", "--max-steps", help="Max number of steps", 
-                    type=int, default=10000)
-args = parser.parse_args()
 
 UP = (1, 0)
 LEFT = (0, 1)
@@ -29,9 +21,9 @@ STEP_THROTTLE = 0.8
 STEP_TURN = 0.8
 
 frame_skip = 2
-total_frames = args.max_steps
+total_frames = 5000
 render = True
-output_folder = args.folder
+output_folder = "./"
 
 # Create folder if needed
 os.makedirs(output_folder, exist_ok=True)
@@ -79,7 +71,31 @@ pygame.init()
 window = pygame.display.set_mode((400, 400), RESIZABLE)
 
 control_throttle, control_steering = 0, 0
-conf = load_config(CONFIG_PATH)
+conf = {
+    "port": 9091,
+    "max_cte": 4.0,
+    "cam_config":{"img_w": 160, "img_h": 120, "img_d": 3},
+    "body_style": "car01",
+    "body_rgb": [0,0,0],
+    "car_name": "",
+    "font_size": 20,
+    "racer_name": "test",
+    "country": "Middle East",
+    "bio": "I am the best racer in the world",
+    "host": "127.0.0.1",
+    "lidar_config": {
+        "deg_per_sweep_inc": 2.0,
+        "deg_ang_down": 0.0,
+        "deg_ang_delta": -1.0,
+        "num_sweeps_levels": 1,
+        "max_range": 20.0,
+        "noise": 0.4,
+        "offset_x": 0.0,
+        "offset_y": 0.5,
+        "offset_z": 0.5,
+        "rot_x": 0.0
+    }
+}
 
 env = gym.make("donkey-generated-track-v0", conf=conf)
 
@@ -137,10 +153,11 @@ for frame_num in range(total_frames):
         obs, reward, done, info = env.reset()
         control_throttle, control_steering = 0, 0
         #Save Lidar data as numpy
-        np.save(os.path.join(output_folder, f"{t}_lidar_data.npy"), np.array(lidar_data))
 
         t = t+1
-        lidar_data = []
+
+np.save(os.path.join(output_folder, f"{t}_lidar_data.npy"), np.array(lidar_data))
+
 env.close()
 
 

@@ -39,27 +39,28 @@ def prepare_data(images):
     X = images.copy()
     y = to_categorical(np.arange(images.shape[0]))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5, shuffle=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5, shuffle=False)
 
     return X_train, X_test, y_train, y_test
 
 def visualize_samples(autoencoder, X_test, test_samples):
     preds = [autoencoder.predict(np.expand_dims(X_test[i], axis=0)) for i in test_samples]
 
-    fig, ax = plt.subplots(len(test_samples), 2)
     for i, sample in enumerate(test_samples):
         img = X_test[sample]
         pred = preds[i]
 
-        plt.imshow(img)
+        #add axis to img
+        img = np.expand_dims(img, axis=0)
+        plt.imshow(img[0])
         plt.show()
 
         plt.imshow(pred[0])
         plt.show()
 
-
-        ax[i, 0].imshow(img, cmap='gray')
-        ax[i, 1].imshow(pred[0], cmap='gray')
+        #save img and pred
+        plt.imsave(f"sample{i}10.png", img[0])
+        plt.imsave(f"pred{i}10.png", pred[0])
 
     plt.show()
 
