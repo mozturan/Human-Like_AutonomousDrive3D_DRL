@@ -79,27 +79,27 @@ lidars = normalize_lidars(lidars)
 
 X_train, X_test, y_train, y_test = prepare_data(lidars)
 
-# ae = Autoencoder()
-# ae.summary()
-# ae.train(X_train, X_test, epochs=100, batch_size=16)
+ae = Autoencoder()
+ae.summary()
+ae.train(X_train, X_test, epochs=100, batch_size=16)
 
-# ae.save_encoder()
+ae.save_encoder()
 lidar = np.expand_dims(X_train[500
 ], axis=0)
 
-# print(ae.predict(lidar))
-
-plt.figure(figsize=(10, 10))
-plt.subplot(111, projection='polar')
-angles = np.deg2rad(np.linspace(0, 359, 180))
-line, = plt.plot(angles, lidar[0], label='LİDAR Nokta Bulutu', linewidth=3) 
-plt.legend()
-plt.show()
+lidar_predicted = ae.predict(lidar)
 
 # plt.figure(figsize=(10, 10))
 # plt.subplot(111, projection='polar')
 # angles = np.deg2rad(np.linspace(0, 359, 180))
-# line, = plt.plot(angles, lidar[0], label='Normalize Edilmiş Original LİDAR Verisi') 
-# line1, = plt.plot(angles, lidar_predicted[0], label='Yeniden Oluşturulmus LİDAR Verisi')
+# line, = plt.plot(angles, lidar[0], label='LİDAR Nokta Bulutu', linewidth=3) 
 # plt.legend()
 # plt.show()
+
+plt.figure(figsize=(10, 10))
+plt.subplot(111, projection='polar')
+angles = np.deg2rad(np.linspace(0, 359, 180))
+line, = plt.plot(angles, lidar[0], label='Original LİDAR Verisi', linewidth=5) 
+line1, = plt.plot(angles, lidar_predicted[0], label='Yeniden Oluşturulmus LİDAR Verisi', linewidth=3)
+plt.legend(fontsize=23)
+plt.show()

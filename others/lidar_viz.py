@@ -5,7 +5,7 @@ from PIL import Image
 import glob
 
 # Load the saved LiDAR data
-lidar_data = np.load('/home/o/Documents/donkeycar_rl/data/pack/generated_track_human/lidar_data.npy')  # Ensure this file exists and is correctly formatted
+lidar_data = np.load('/home/o/Documents/donkeycar_rl/lidar/32_lidar_data.npy')  # Ensure this file exists and is correctly formatted
 
 for i in range(len(lidar_data)):
     for k in range(len(lidar_data[i])):

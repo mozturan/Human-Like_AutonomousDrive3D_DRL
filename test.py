@@ -8,9 +8,8 @@ import keras
 import tensorflow as tf
 
 max_episode_length = 500
-test_config_path = "models/final_destination/SAC-CL+Noise/test_config.json"
-model_path = "models/final_destination/SAC-CL+Noise/_361.keras"
-
+test_config_path = "models/new_generations/SAC+Noise+EMA/test_config.json"
+model_path = "models/new_generations/SAC+Noise+EMA/_235.keras"
 test_config = load_train_config(test_config_path)
 
 conf = load_sim_config()
@@ -49,6 +48,8 @@ def chose_action (model, state):
         state = tf.convert_to_tensor([state])
         actions, _ = model.sample_normal(state, reparameterize=False)
 
+        # a small random noise added to action to avoid deadlocks
+        # noise = np.random.normal(0, 0.2)
         return actions[0]
 
 for episode in range(1):

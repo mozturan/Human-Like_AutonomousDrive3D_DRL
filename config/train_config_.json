@@ -3,7 +3,7 @@
         "name": "donkey-generated-track-v0"
     },
 
-    "Model" : "NSAC",
+    "Model" : "SAC",
 
     "Agent": {
         "name": "SAC",
