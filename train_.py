@@ -8,9 +8,6 @@ import os
 
 actor_loss_history = []
 critic_loss_history = []
-actor_loss_history = np.array(actor_loss_history)
-critic_loss_history = np.array(critic_loss_history)
-
 score_history = []
 max_episode_length = 300
 best_score = -1000

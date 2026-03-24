@@ -1,11 +1,11 @@
 # Human-Like Autonomous Driving via Deep Reinforcement Learning with External Action Filtering
 
 <p align="center">
-  <img src="assets/system_architecture.png" alt="System Architecture" width="750"/>
+  <img src="assets/system_architecture.svg" alt="System Architecture" width="750"/>
 </p>
 
 <p align="center">
-  <a href="https://doi.org/XXXX"><img src="https://img.shields.io/badge/Paper-ELECO%202025-blue?style=flat-square" alt="Paper"/></a>
+  <a href="https://doi.org/10.1109/ELECO69582.2025.11329257"><img src="https://img.shields.io/badge/Paper-ELECO%202025-blue?style=flat-square" alt="Paper"/></a>
   <img src="https://img.shields.io/badge/Python-3.8%2B-green?style=flat-square"/>
   <img src="https://img.shields.io/badge/Framework-PyTorch-orange?style=flat-square"/>
   <img src="https://img.shields.io/badge/Simulator-Donkey%20Car-red?style=flat-square"/>
@@ -36,7 +36,7 @@ This repository presents a **modular DRL architecture** that cleanly separates t
 ### System Architecture
 
 <p align="center">
-  <img src="assets/system_architecture.png" alt="System Architecture" width="700"/>
+  <img src="assets/system_architecture.svg" alt="System Architecture" width="700"/>
 </p>
 
 The system is built on three decoupled stages:
@@ -66,7 +66,7 @@ The actor and two critic networks each use **two hidden layers of 1024 units**. 
 $$a_t = \mu_\phi(s_t) + \sigma_\phi(s_t) \cdot \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0,1)$$
 
 <p align="center">
-  <img src="assets/network_structure.png" alt="SAC Network Structure" width="600"/>
+  <img src="assets/networks.svg" alt="SAC Network Structure" width="600"/>
 </p>
 
 ### Action Smoothing Filters
@@ -85,7 +85,7 @@ $$\tilde{a}_t = \frac{n \cdot a_t + (n-1) \cdot \tilde{a}_{t-1} + \cdots + 1 \cd
 
 The composite reward encourages lane centering, speed regulation, and mild action smoothness:
 
-$$R(t) = R_{cc}(t) \cdot R_{spd}(t) - R_{act}(t) + 1$$
+$$R(t) = \frac{R_{cc}(t) \cdot R_{spd}(t)}{R_{act}(t) + 1}$$
 
 | Component | Description |
 |-----------|-------------|
@@ -98,6 +98,10 @@ $$R(t) = R_{cc}(t) \cdot R_{spd}(t) - R_{act}(t) + 1$$
 ## Experiments
 
 ### Setup
+
+<p align="center">
+  <img src="assets/map.png" alt="System Architecture" width="300"/>
+</p>
 
 - **Simulator:** [Donkey Car](https://docs.donkeycar.com/) 3D simulator, *mountain-track*
 - **Task:** Simultaneous lane keeping + static obstacle avoidance
@@ -121,13 +125,11 @@ $$R(t) = R_{cc}(t) \cdot R_{spd}(t) - R_{act}(t) + 1$$
 ### Training Performance
 
 <p align="center">
-  <img src="assets/episode_length.png" alt="Episode Length" width="45%"/>
-  <img src="assets/episode_reward.png" alt="Episode Reward" width="45%"/>
-</p>
+  <img src="assets/episode_length.png" alt="Episode Length" width="100%"/>
 
 <p align="center">
-  <img src="assets/mean_action_change_train.png" alt="Mean Action Change - Training" width="45%"/>
-  <img src="assets/mean_error_train.png" alt="Mean Error - Training" width="45%"/>
+  <img src="assets/mean_action_change_train.png" alt="Mean Action Change - Training" width="100%"/>
+  <img src="assets/mean_error_train.png" alt="Mean Error - Training" width="100%"/>
 </p>
 
 **Training summary:**
@@ -143,7 +145,7 @@ $$R(t) = R_{cc}(t) \cdot R_{spd}(t) - R_{act}(t) + 1$$
 ### Testing Performance
 
 <p align="center">
-  <img src="assets/tradeoff_plot.png" alt="Performance-Smoothness Trade-off" width="600"/>
+  <img src="assets/tradeoff_plot.svg" alt="Performance-Smoothness Trade-off" width="800"/>
 </p>
 
 **Test summary (500-step evaluation, no exploration noise):**
@@ -163,39 +165,19 @@ $$R(t) = R_{cc}(t) \cdot R_{spd}(t) - R_{act}(t) + 1$$
 ## Repository Structure
 
 ```
-├── autoencoders/         # Convolutional and FC autoencoders for perception
-├── sac/                  # SAC agent implementation (actor, critics, value nets)
+├── camera/               # Convolutional and FC autoencoders for camera images
+├── lidar /               # Convolutional and FC autoencoders for lidar point clouds
+├── agents/               # SAC agent implementation (actor, critics, value nets, buffer)
 ├── filters/              # EMA and WMA action smoothing modules
-├── envs/                 # Donkey Car environment wrappers
+├── wrappers/             # External wrappers (non-gym) for action, reward and observations
 ├── train.py              # Training entry point
+├── train_.py             # Training entry point (different kind)
+├── test.py               # Testing entry point
 ├── evaluate.py           # Evaluation and test drive script
-├── configs/              # Hyperparameter configs
-├── assets/               # Images used in this README
+├── configs/              # Environment and hyperparameter configs
+├── assets/               # Images used in this README and more
+├── utils/                # helper scripts
 └── requirements.txt
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-
-```bash
-pip install -r requirements.txt
-```
-
-You will also need the [Donkey Car simulator](https://docs.donkeycar.com/) binary for your platform.
-
-### Training
-
-```bash
-python train.py --model SAC+Noise+WMA --config configs/wma.yaml
-```
-
-### Evaluation
-
-```bash
-python evaluate.py --checkpoint checkpoints/sac_wma_best.pt --steps 500
 ```
 
 ---
@@ -205,12 +187,17 @@ python evaluate.py --checkpoint checkpoints/sac_wma_best.pt --steps 500
 If you find this work useful, please cite:
 
 ```bibtex
-@inproceedings{ozturan2025suppressing,
-  title     = {Suppressing Control Oscillations in Reinforcement Learning via External Action Filtering for Autonomous Driving},
-  author    = {Özturan, Mehmet Yaşar Osman and Dirik, Ahmet Emir},
-  booktitle = {ELECO 2025 -- International Conference on Electrical and Electronics Engineering},
-  year      = {2025}
-}
+@INPROCEEDINGS{11329257,
+  author={Osman Özturan, Mehmet Yaşar and Emir Dirik, Ahmet},
+  booktitle={2025 16th International Conference on Electrical and Electronics Engineering (ELECO)}, 
+  title={Suppressing Control Oscillations in Reinforcement Learning via External Action Filtering for Autonomous Driving}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-5},
+  keywords={Training;Smoothing methods;Systematics;Navigation;Filtering;Deep reinforcement learning;Driver behavior;Autonomous vehicles;Oscillators;Tuning},
+  doi={10.1109/ELECO69582.2025.11329257}}
+
 ```
 
 ---
