@@ -1,8 +1,12 @@
 # Human-Like Autonomous Driving via Deep Reinforcement Learning with External Action Filtering
 
-<p align="center">
-  <img src="assets/system_architecture.svg" alt="System Architecture" width="750"/>
-</p>
+<div align="center" style="width: 600px;">
+  <video
+    src="https://github.com/user-attachments/assets/ad8c64d2-f99a-40b8-a301-d433976aa0bc"
+    controls
+    style="display:block; width:100%; max-width:100%; margin:0 auto;"
+  ></video>
+</div>
 
 <p align="center">
   <a href="https://doi.org/10.1109/ELECO69582.2025.11329257"><img src="https://img.shields.io/badge/Paper-ELECO%202025-blue?style=flat-square" alt="Paper"/></a>
